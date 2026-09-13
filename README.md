@@ -1,22 +1,18 @@
 # Dr Hashim and Associates
 
-A responsive dental practice website inspired by the warm, editorial design of https://www.zen.dentist/, with original branding, copy, and generated studio imagery.
+A mobile-first dental practice website built with Next.js, React, and TypeScript. The visual system and content direction follow the warm, editorial guidance in `DESIGN.md`.
 
-## Preview
+## Development
 
-Run `npm run dev`, then open http://localhost:3000. No dependency installation is required. The site itself is in `dist/` and can be served by any static web host.
+Run `npm install`, then `npm run dev`, and open http://localhost:3000.
+
+For a production check, run `npm run build` and `npm start`.
 
 ## Before launch
 
-- Replace the clearly labelled placeholder phone number, address, and email in `dist/index.html`.
-- Connect the booking buttons in `dist/app.js` to the practice's real booking system.
+- Replace the clearly labelled placeholder phone number, address, and email in `app/page.tsx`.
+- Connect the booking buttons in `app/ui.tsx` to the practice's real booking system.
 - Confirm practice services and copy. Service descriptions are draft content, not verified practice capabilities.
 - Replace the illustrative AI-generated studio image with actual clinic photography if available.
 
-## Validation
-
-JavaScript syntax checked. Desktop visual layout, image loading, mobile navigation, booking notice, and service dialog checked in the browser.
-
-## Hosting
-
-Site registration exists in `.openai/hosting.json`, but no version was deployed. The Sites publishing skill and scripts became unavailable during this session. Reuse the existing project ID when publishing; do not register a replacement.
+The legacy static prototype remains in `dist/` for reference; the Next.js application is now the active stack.
