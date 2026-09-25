@@ -1,118 +1,504 @@
-# DESIGN.md — Zen Dental Studio (zen.dentist)
+# Design Specification — Dr. Hashim & Associates Dental Clinic
 
-> Note: this was compiled from the site's rendered HTML/content (via fetch), not a pixel-level CSS/visual inspection. Colors and exact type specs below are inferred from imagery, copy, and structural patterns typical of this kind of Next.js marketing site — treat them as a strong starting reference, not a literal extracted stylesheet.
+## 1. Design Goal
 
-## 1. Brand Positioning
-- **Category:** Dental practice marketing site (two Bay Area locations: San Francisco/SoMa, Mountain View)
-- **Core promise:** "Modern dental care, thoughtfully delivered" — clinical competence wrapped in spa-like calm
-- **Tagline:** "Dentistry, reimagined."
-- **Tone:** Warm, plain-spoken, reassuring. Short sentences. Second-person ("you'll always know what's going on"). No jargon, no fear-based dental marketing clichés.
-- **Emotional target:** Anxious/dental-averse patients — copy repeatedly de-escalates ("Nervous at the dentist? We get it.")
+Create a professional, calm, trustworthy, and patient-friendly dental clinic website. The design should feel closer to a modern private hospital or specialist clinic than to an aggressive marketing website.
 
-## 2. Site Architecture
-```
-/                      Home
-/our-story             About / team
-/services              Services hub
-  /services/invisalign
-  /services/dental-implants
-  /services/veneers
-  /services/teeth-whitening
-  /services/exams-and-cleanings
-  /services/fillings
-  /services/dental-crowns
-  /services/root-canals
-  /services/extractions
-  /services/emergency
-/patients              Patient info hub (#insurance, #membership, #faq anchors)
-/patients/first-visit
-/contact
-/san-francisco         Location page
-/mountain-view         Location page
-```
-- Built on Next.js (evident from `/_next/image` optimized asset pipeline, `?w=&q=&dpl=` query params).
-- Booking funnel routes to NexHealth (`app.nexhealth.com/appt/zendentalstudio?lid=...`), separate `lid` per location.
+The website must communicate:
+- Professional dental expertise
+- Patient comfort and trust
+- Modern equipment and treatment
+- Accessibility for everyone
+- Clear, simple navigation
+- Strong mobile usability
 
-## 3. Page Composition (Homepage, top to bottom)
-1. **Sticky nav** — logo left; primary links (Our Story, Services ▾, Patients ▾, Contact, San Francisco / Mountain View); persistent **"Book Now"** CTA button, right-aligned.
-2. **Hero** — full-bleed photo of a warm, wood-lined treatment room with natural light. Location eyebrow ("San Francisco · Mountain View") → H1 → subhead → dual CTA ("Book a Visit" primary, "Call Now" secondary).
-3. **"How We Care"** — 5-step numbered narrative (01–05), alternating text/image, each pairing a short label + bold micro-headline + 1–2 sentence explanation. Photography of staff/spaces breaks up the list every ~2 items.
-4. **Testimonial pair** — pull-quote style, name-only attribution (first name + last initial).
-5. **"What We Do"** — services organized into **two named tiers**: "Everyday care" and "Signature care," each a card linking to a service list, plus a separate "Urgent Care" card with same-day messaging. Clear content model: tiering communicates routine-vs-elective without saying so directly.
-6. **"Technology"** — 6 in-house technologies as a numbered grid (CBCT Imaging, 3D Scanners, 3D Printing, AI-Assisted Diagnostics, Digital X-Rays, Laser Dentistry), each with a one-line benefit tag and "Details" link.
-7. **Testimonial pair** (again).
-8. **"The Details" (amenities)** — 8-item numbered grid: Netflix, heated lavender eye masks, organic blankets, premium beverages, aromatherapy, toxin-free products, massage chairs, noise-canceling headphones. This is the section doing the most brand differentiation.
-9. **Patient Stories** — dense testimonial wall, multiple quotes, first name + last initial each.
-10. **"Our Studios"** — two location cards (photo, address, phone, Book/Call CTAs).
-11. **Closing CTA band** — restates value prop, dual CTA again, link to full services.
-12. **Footer** — dark, full-width. Logo (white variant) + tagline "Dentistry, reimagined." Three link columns (Explore / Services / Studios) each location with full address, phone, and email. Copyright line, repeated location tag.
+Avoid:
+- Overly promotional marketing language
+- Cluttered layouts
+- Excessive animations
+- Unnecessary visual effects
+- Generic template-like styling
 
-## 4. Recurring UI Patterns
-- **Numbered micro-lists (01, 02, 03…)** used everywhere — care philosophy, services, technology, amenities. This is the site's signature structural device: it turns dense information into scannable, editorial-feeling steps rather than a features grid.
-- **Two-tier service naming** ("Everyday care" vs "Signature care") instead of generic "General / Cosmetic" — softer, brand-voice-consistent labels.
-- **Consistent dual-CTA pairing**: "Book a Visit" (primary/booking) + "Call Now"/"Call Studio" (secondary/tel: link) appears at hero, mid-page, and studio cards.
-- **Photography-led sections**: every major section anchors to a real interior/team photo (not stock/illustration), reinforcing the "designed space" promise.
-- **Testimonials as connective tissue** between sections rather than isolated in one carousel — used 3 separate times down the page.
-- **Location duality baked into copy**, not bolted on: "San Francisco · Mountain View" eyebrow repeats in hero and footer; every location-specific CTA carries its own phone/booking ID.
+## 2. Brand Identity
 
-## 5. Visual Language (inferred from imagery + brand cues)
-- **Palette:** warm neutral/wood tones (light oak, cream, soft white) as the dominant interior palette, likely paired with a deep charcoal/black footer for contrast — consistent with the "spa, not clinic" positioning repeated in testimonials ("feels more like a spa visit than a dental one").
-- **Imagery style:** natural light, minimal clinical signage visible, wood paneling, plants — architecture-photography quality rather than stock dental photos.
-- **Typography (likely pattern for this design tier):** a clean geometric/humanist sans for UI and body copy, possibly a slightly warmer serif or higher-contrast display face for H1/section headlines to add a boutique, editorial feel — consistent with short, declarative headline copy like "You're in good hands."
-- **Iconography:** minimal — numbers (01–08) substitute for icons throughout, which is a deliberate, distinctive choice over generic icon sets.
-- **Logo:** two lockups in use — dark logo for light nav background, full white logo for dark footer.
+### Clinic
+**Dr. Hashim & Associates Dental Clinic**
 
-## 6. Content/Voice Guidelines (extractable style rules)
-- Sentences are short and confident; avoid dental jargon (uses "goopy molds" instead of "alginate impressions").
-- Every capability is framed as a patient benefit, not a feature: "Digital scans instead of goopy molds" rather than "iTero scanner."
-- Numbers/stats used sparingly but concretely ("over 30 years of experience between them," "same day whenever possible").
-- Testimonials are curated to reinforce specific themes: calm environment, transparency/no upselling, holistic health framing, tech-forward care.
-- CTAs are always verbs: "Book a Visit," "Call Now," "Explore all services," "Read our story."
+**Location:** 1st Floor, Pehchan Mall, G-9 Markaz, Islamabad
 
-## 7. Suggested Design Tokens (starting point if rebuilding)
-| Token | Suggested value | Rationale |
+**Slogan:** Modern dental care for everyone
+
+**English Tagline:** Expert care. Comfortable visits. Dentistry done right, for everyone.
+
+**Urdu Tagline:** آپ کی مسکراہٹ، ہماری ذمہ داری
+
+### Logo
+
+The clinic logo is a circular emblem with a stylised tooth icon and the clinic name in two typographic weights.
+
+Use the logo:
+- Header/navigation: left aligned
+- Footer: centered
+- Favicon: icon mark only
+
+Do not distort, recolor, stretch, or unnecessarily modify the logo.
+
+## 3. Color System
+
+Use the following palette consistently throughout the website.
+
+| Color | Hex | Primary Usage |
 |---|---|---|
-| `color-bg` | `#FAF8F5` / warm off-white | Matches wood/interior warmth |
-| `color-surface-dark` | near-black charcoal | Footer contrast band |
-| `color-accent-wood` | muted tan/oak | Pulled from hero imagery |
-| `color-text-primary` | soft charcoal, not pure black | Consistent with calm/soft brand tone |
-| `font-display` | warm serif or rounded sans, medium weight | For H1/section headers |
-| `font-body` | neutral sans (e.g., Inter-like) | For paragraph copy, nav |
-| `radius` | generous rounding on cards/buttons | Softness matches "zen" positioning |
-| `motion` | subtle fade/slide on scroll reveal (numbered sections) | Editorial, unhurried feel |
+| Deep Navy Blue | `#1B3A8C` | Headers, navbar, footer, primary backgrounds, buttons |
+| Sky / Bright Blue | `#2E9ED6` | Accents, subheadings, hover states, icons, highlights, CTAs |
+| White | `#FFFFFF` | Page backgrounds, text on dark backgrounds, card fills |
+| Light Blue Tint | `#EBF5FC` | Section backgrounds, table alternates, subtle highlights |
 
-## 8. Responsive Strategy — Mobile-First
+### Color Rules
 
-This design should be built **mobile-first**: author all base styles for the smallest viewport, then layer on complexity with `min-width` media queries as the screen grows. Never design/build desktop first and shrink it down — that's how the numbered-list sections, dual-CTA rows, and full-bleed hero imagery break on phones.
+- Navy should establish trust and visual structure.
+- Sky blue should be used as an accent rather than dominating the page.
+- White space should remain generous.
+- Light blue tint can separate sections without creating visual heaviness.
+- Do not introduce arbitrary brand colors unless required for accessibility or functional states.
+- Maintain sufficient contrast for text and interactive elements.
 
-### Breakpoint scale
-| Name | Min-width | Target devices | Notes |
-|---|---|---|---|
-| `base` (default, no query) | `0px` | Small phones (iPhone SE, older Android) | This is the real default — write it first, not as an afterthought override |
-| `sm` | `480px` | Standard phones (iPhone 12–16, Pixel, Galaxy) | Slightly looser spacing, larger tap targets settle in |
-| `md` | `768px` | Tablets / phones landscape | Nav can start expanding; 2-column grids become viable |
-| `lg` | `1024px` | Small laptops / iPad landscape | Full desktop nav, multi-column sections |
-| `xl` | `1280px` | Desktop | Max content width, generous whitespace, side-by-side text/image sections |
-| `2xl` | `1536px` | Large desktop | Cap content width (e.g. `max-width: 1440px`), center, avoid line-length blowout |
+## 4. Typography
 
-### Per-section mobile-first rules
-- **Nav:** Base = logo + hamburger menu + single "Book Now" button (icon-only or short label if space is tight). Full horizontal link list (Our Story / Services ▾ / Patients ▾ / Contact / location switch) only appears at `md`+. Dropdowns (Services, Patients) become tap-to-expand accordions on mobile, not hover menus.
-- **Hero:** Base = image cropped to portrait/square focal point (not the wide desktop crop), stacked H1 → subhead → CTAs, both CTAs full-width and stacked vertically. At `md`+, CTAs go side-by-side; at `lg`+, hero can use the wide landscape crop.
-- **Numbered "How We Care" / Technology / Amenities lists:** Base = single column, image always above its text block (never side-by-side), numbers stay large and left-aligned as a visual anchor. Two-column text/image alternating layout only kicks in at `lg`+.
-- **Service tier cards (Everyday / Signature / Urgent):** Base = stacked full-width cards, one per row. `md` = 2-up grid. `lg` = 3-up.
-- **Testimonials:** Base = single quote at a time, full width, generous line-height for readability at small sizes. Consider swipeable/scroll-snap carousel on mobile rather than a static grid. `lg`+ can show 2–3 quotes side-by-side.
-- **Studio cards (SF / Mountain View):** Base = stacked, full-width photo above address/phone/CTAs. `md`+ = side-by-side two-up.
-- **Footer:** Base = single-column stacked link groups (Explore / Services / Studios), each collapsible/accordion if long. `md`+ = 3-column grid as designed.
-- **Touch targets:** All CTA buttons, nav links, and accordion headers ≥ 44×44px tap area at every breakpoint — this matters more than it did at desktop-first hover-driven design.
-- **Typography scale:** Don't just shrink desktop type — use a distinct mobile type scale (e.g., H1 ~28–32px on base, scaling to ~48–56px by `xl`) so headlines wrap cleanly at phone widths without awkward line breaks.
-- **Images:** Serve responsive `srcset`/`sizes` (the site already uses Next.js `_next/image` with `w=` params, so this is a natural fit) — smaller crops/resolutions at `base`, full-res wide crops only loaded at `lg`+.
+Use a professional serif/semi-serif paired with a clean sans-serif.
 
-### Testing checklist
-- [ ] 320px width (smallest common phone) — no horizontal scroll, no overlapping text
-- [ ] 375px / 390px (iPhone standard) — primary target, should feel native
-- [ ] 428px (large phones) — CTAs and numbered lists still comfortable
-- [ ] 768px (tablet portrait) — verify transition point doesn't look like an awkward in-between
-- [ ] 1024px+ — full desktop layout, verify max-width containers prevent overly long text lines
+Suggested fonts:
+- Serif: Playfair Display, Merriweather, or similar
+- Sans-serif: DM Sans, Lato, Open Sans, or similar
+- Urdu: Noto Nastaliq Urdu or Jameel Noori Nastaleeq
 
-## 9. Limitations of This Document
-This was generated from the site's fetched HTML/markdown content, not from live CSS, computed styles, or a rendered screenshot. Exact colors, font families, spacing scale, and breakpoints are not confirmed. If you need pixel-accurate tokens (hex values, font names, spacing units), the next step would be to inspect the live site's CSS/computed styles directly (e.g., via browser devtools or a rendering tool) rather than relying on this fetch-based summary.
+### Typography Rules
+
+- Body text: approximately 16px minimum for readability.
+- Headings should create a clear hierarchy.
+- Keep body copy easy to scan.
+- Urdu text must render correctly using an appropriate Urdu font.
+- Avoid using too many font families or weights.
+
+## 5. Layout Principles
+
+The website should use:
+- Clean, spacious sections
+- Strong visual hierarchy
+- Consistent alignment
+- Generous white space
+- Consistent card components
+- Clear section separation
+- Sticky/fixed navigation
+- Mobile-first layouts
+
+The interface should feel polished without being flashy.
+
+## 6. Global Navigation
+
+The navigation should provide access to the main website areas:
+
+- Home
+- About Us
+- Our Team
+- Services
+- Our Cases
+- Patient Reviews
+- Book an Appointment
+- Contact
+
+### Navigation Requirements
+
+- Sticky/fixed navigation while scrolling
+- Clinic logo on the left
+- Clear navigation links
+- Prominent **Book Appointment** button
+- Mobile navigation menu
+- Booking CTA must remain easy to access on mobile
+
+## 7. Global CTAs
+
+Primary CTA:
+**Book an Appointment**
+
+Secondary homepage CTA:
+**Explore Our Care**
+
+CTAs should use the brand palette and have clear hover/focus states.
+
+The homepage's appointment CTA should link directly to the online booking page/form.
+
+## 8. WhatsApp
+
+A WhatsApp quick-contact button must appear on every page.
+
+Requirements:
+- Floating button
+- Bottom-right position
+- Clearly visible on mobile
+- Large enough to tap comfortably
+- Should not obstruct important content or navigation
+
+WhatsApp number:
+**0300 855 7144**
+
+## 9. Page Designs
+
+### 9.1 Homepage
+
+Sections:
+
+1. **Hero**
+   - Clinic name
+   - Slogan
+   - English tagline
+   - Urdu tagline
+   - Primary CTA: Explore Our Care
+
+2. **Introduction**
+   - Short description of the clinic's mission and values
+
+3. **Services Overview**
+   - Icon-based grid
+   - Each service links to the Services page or relevant detail
+
+4. **Why Choose Us**
+   - Experienced team
+   - Modern equipment
+   - Gentle care
+   - Convenient location
+
+5. **Team Preview**
+   - Professional photos
+   - Doctor names
+   - Link to full team profiles
+
+6. **Patient Reviews**
+   - Google reviews
+   - Video testimonials when available
+
+7. **Online Booking CTA**
+   - Prominent appointment section
+   - Clear booking button
+
+8. **Footer**
+   - Logo
+   - Address
+   - Contact information
+   - Social links
+   - Copyright
+
+### 9.2 About Us
+
+Include:
+- Mission: **Modern dental care for everyone**
+- Clinic facilities
+- Equipment highlights
+- Location information
+- Embedded Google Map
+
+### 9.3 Our Team
+
+Create a dedicated profile for each doctor.
+
+Each profile should include:
+- Professional photo
+- Name
+- Designation
+- Specialty
+- Short biography
+
+Doctors:
+
+**Dr. Hashim Asad**
+- Dental Surgeon / Principal
+- General & Restorative Dentistry
+- Lead clinician and founder of the practice. Experienced in general dentistry with a focus on Endodontics and patient-centred, comprehensive care.
+
+**Dr. Baryal Khan**
+- Dental Surgeon
+- Digital Dentistry & Esthetics
+- Specialist in digital treatment planning, esthetic dentistry, and clear aligner therapy. Practices standardized pain-free dentistry.
+
+**Dr. Ozair Shirazi**
+- Oral & Maxillofacial Surgeon
+- Oral Surgery
+- Handles complex extractions, surgical procedures, and facial trauma cases.
+
+**Dr. Zohra Mansoor**
+- Orthodontist
+- Orthodontics
+- Provides braces, aligner therapy, and bite correction for children, teens, and adults.
+
+### 9.4 Services
+
+Use a consistent card design.
+
+Each card should contain:
+- Icon
+- Service name
+- Patient-friendly description
+- Optional expand/detail interaction
+
+Services:
+
+1. Diagnostics
+2. Endodontics (Root Canal)
+3. Periodontics (Gum Treatment)
+4. Pediatric Dentistry
+5. Oral Surgery
+6. Orthodontics
+7. Cosmetic Dentistry
+8. Restorative Dentistry
+
+Keep descriptions patient-friendly and avoid unnecessarily technical presentation.
+
+### 9.5 Our Cases
+
+Create a visual before-and-after case gallery.
+
+Requirements:
+- Placeholder grid until clinical photos are supplied
+- Categories such as Cosmetic, Restorative, and Orthodontics
+- Lightbox for enlarged images
+- Consistent image aspect ratios
+- Optional before/after slider as a nice-to-have
+
+Do not invent clinical cases or images.
+
+### 9.6 Patient Reviews
+
+Include:
+- Google Reviews integration/widget
+- Overall star rating
+- Review content
+- Video testimonials
+- YouTube/Vimeo embeds when links are supplied
+
+Design the section to feel authentic rather than promotional.
+
+### 9.7 Book an Appointment
+
+The appointment page should prioritize the booking experience.
+
+Use the provided booking form:
+
+https://script.google.com/macros/s/AKfycbzTJIK9MVlZAKcQQrxgBU9RPxQkbA-6VcU5UtyVtO2gibmA_Cgs8kJg30BqIQG7kvGcMQ/exec
+
+Requirements:
+- Clear page heading
+- Embedded booking form where technically appropriate
+- Strong appointment CTA
+- Easy access from navigation and homepage
+- Mobile-friendly form experience
+
+### 9.8 Contact
+
+Include:
+- Address
+- WhatsApp
+- Email
+- Clinic hours
+- Google Map
+- Contact enquiry form
+
+**Address:** 1st Floor, Pehchan Mall, G-9 Markaz, Islamabad
+
+**WhatsApp:** 0300 855 7144
+
+**Email:** drhahsimandassociates@gmail.com
+
+**Clinic Hours:** 10:00 to 8:30
+
+The phone number was not provided in the brief. Do not invent one.
+
+## 10. Responsive Design
+
+Build mobile-first.
+
+### Mobile Requirements
+
+- Large tap targets
+- Readable typography
+- No horizontal scrolling
+- Responsive cards and grids
+- Accessible mobile menu
+- Clearly visible WhatsApp button
+- Easily accessible booking button
+- Images optimized for mobile
+- Forms should be comfortable to complete on a phone
+
+Also verify the design at:
+- Mobile
+- Tablet
+- Desktop
+- Large desktop
+
+## 11. Components
+
+Create reusable components for:
+
+- Header/navbar
+- Mobile menu
+- Primary CTA button
+- Secondary CTA button
+- Section heading
+- Service card
+- Doctor/team card
+- Case gallery card
+- Review card
+- Booking CTA
+- Google Map section
+- Footer
+- WhatsApp floating button
+- Image lightbox
+- FAQ accordion, if implemented
+
+Components should maintain consistent spacing, typography, borders, radius, and interaction states.
+
+## 12. Motion & Interaction
+
+Use subtle interactions only.
+
+Required:
+- Smooth scrolling
+- Clear hover states
+- Clear focus states
+- Smooth but restrained page transitions
+
+Optional:
+- Animated counters
+- Before/after image slider
+- FAQ accordion
+
+Avoid:
+- Excessive parallax
+- Large distracting animations
+- Autoplay effects that interfere with usability
+- Animation that makes the website feel like a promotional landing page
+
+## 13. Accessibility
+
+The design should support accessible use.
+
+Requirements:
+- Sufficient color contrast
+- Keyboard-accessible interactive elements
+- Visible focus states
+- Descriptive alt text for meaningful images
+- Proper heading hierarchy
+- Accessible form labels
+- Buttons and links should be distinguishable
+- Avoid conveying essential information through color alone
+- Ensure Urdu content is readable
+
+## 14. Image Guidelines
+
+Use professional, high-quality imagery.
+
+Expected assets:
+- Clinic logo — provided
+- Doctor headshots — to be provided
+- Clinic interior photos — to be provided
+- Clinical case photos — to be provided
+- Video testimonials — to be provided
+- Vlogs/B-roll — to be provided
+
+Until assets are available:
+- Use clearly marked placeholders
+- Preserve intended image dimensions/aspect ratios
+- Do not fabricate doctor photos, patient cases, testimonials, or clinic images
+
+## 15. SEO & Performance
+
+The design and implementation should be SEO-ready.
+
+Requirements:
+- Semantic HTML
+- Proper H1/H2/H3 hierarchy
+- Page-specific metadata
+- Descriptive image alt text
+- Fast-loading optimized images
+- Clean code
+- Mobile-first responsive implementation
+- Meaningful page titles
+- Search-friendly service/page structure
+
+## 16. Content Rules
+
+The clinic website should communicate expertise without making unsupported medical or promotional claims.
+
+Do:
+- Use clear patient-friendly language
+- Explain services simply
+- Maintain a calm, trustworthy tone
+- Keep claims grounded in provided clinic information
+
+Do not:
+- Invent qualifications
+- Invent awards
+- Invent patient numbers
+- Invent reviews
+- Invent treatment outcomes
+- Invent equipment or facilities
+- Add unsupported medical claims
+- Alter doctor credentials without source material
+
+## 17. Design Quality Checklist
+
+Before considering the design complete, verify:
+
+### Branding
+- [ ] Correct logo placement
+- [ ] Brand colors used consistently
+- [ ] Correct typography system
+- [ ] Urdu tagline renders correctly
+
+### Layout
+- [ ] Clear visual hierarchy
+- [ ] Generous white space
+- [ ] Consistent spacing
+- [ ] Consistent card styles
+- [ ] Sticky navigation works
+
+### Navigation
+- [ ] All primary pages accessible
+- [ ] Book Appointment visible in navigation
+- [ ] Mobile menu works
+- [ ] WhatsApp button appears on every page
+
+### Content
+- [ ] Four doctors represented correctly
+- [ ] Eight services represented
+- [ ] Cases section has placeholders where assets are missing
+- [ ] Reviews section supports Google Reviews
+- [ ] Contact information matches the brief
+
+### Responsive
+- [ ] Mobile layout checked
+- [ ] Tablet layout checked
+- [ ] Desktop layout checked
+- [ ] No horizontal overflow
+- [ ] Buttons are easy to tap
+
+### Performance & SEO
+- [ ] Images optimized
+- [ ] Alt text present
+- [ ] Heading hierarchy is correct
+- [ ] Metadata is present
+- [ ] Pages load efficiently
+
+## 18. Agent Instructions
+
+When modifying or generating the website:
+
+1. Treat this file as the source of truth for design requirements.
+2. Preserve the clinic's stated brand colors and typography direction.
+3. Do not invent missing content.
+4. Use placeholders for assets marked "to be provided."
+5. Maintain a calm, professional healthcare aesthetic.
+6. Prioritize mobile usability.
+7. Keep reusable components consistent across pages.
+8. Do not introduce unnecessary design complexity.
+9. Verify all global requirements after making changes.
+10. If a requirement conflicts with an implementation constraint, preserve the user-facing requirement and clearly document the constraint rather than silently changing the design.

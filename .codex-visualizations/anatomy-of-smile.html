@@ -1,0 +1,611 @@
+<section id="anatomy-smile-concept" class="dh-services-concept" aria-labelledby="dh-services-title">
+  <style>
+    #anatomy-smile-concept {
+      --dh-ink: light-dark(#082765, #eef5ff);
+      --dh-blue: #143f91;
+      --dh-sky: #2f9bd4;
+      --dh-gold: #b9903d;
+      --dh-paper: light-dark(#f7fbff, #09172d);
+      --dh-panel: light-dark(#ffffff, #10223e);
+      --dh-soft: light-dark(#e9f4fb, #142c4d);
+      --dh-muted: light-dark(#5f6f8c, #aabbd5);
+      --dh-rule: light-dark(rgba(8, 39, 101, .15), rgba(222, 235, 255, .16));
+      --dh-accent: #143f91;
+      --dh-visual-scale: 1;
+      color-scheme: light dark;
+      box-sizing: border-box;
+      width: 100%;
+      overflow: hidden;
+      background: var(--dh-paper);
+      color: var(--dh-ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #anatomy-smile-concept *,
+    #anatomy-smile-concept *::before,
+    #anatomy-smile-concept *::after { box-sizing: inherit; }
+
+    #anatomy-smile-concept .dh-wrap {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: clamp(34px, 6vw, 76px) clamp(18px, 4vw, 52px);
+    }
+
+    #anatomy-smile-concept .dh-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(230px, .75fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: clamp(28px, 5vw, 54px);
+    }
+
+    #anatomy-smile-concept .dh-kicker {
+      margin: 0 0 12px;
+      color: var(--dh-sky);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    #anatomy-smile-concept h2 {
+      max-width: 700px;
+      margin: 0;
+      color: var(--dh-ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(38px, 5.4vw, 68px);
+      font-weight: 400;
+      line-height: .98;
+      letter-spacing: -.04em;
+    }
+
+    #anatomy-smile-concept h2 em {
+      color: var(--dh-sky);
+      font-weight: 400;
+    }
+
+    #anatomy-smile-concept .dh-intro-copy {
+      max-width: 390px;
+      margin: 0 0 4px;
+      color: var(--dh-muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    #anatomy-smile-concept .dh-explorer {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      min-height: 620px;
+      overflow: hidden;
+      border-radius: 2px;
+      background: var(--dh-panel);
+      box-shadow: 0 24px 70px light-dark(rgba(14, 49, 105, .1), rgba(0, 0, 0, .22));
+    }
+
+    #anatomy-smile-concept .dh-visual {
+      position: relative;
+      display: grid;
+      min-height: 620px;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--dh-soft) 78%, transparent), transparent 56%),
+        linear-gradient(150deg, var(--dh-soft), var(--dh-panel));
+    }
+
+    #anatomy-smile-concept .dh-visual::before {
+      position: absolute;
+      inset: 22px;
+      border: 1px solid var(--dh-rule);
+      content: "";
+      pointer-events: none;
+    }
+
+    #anatomy-smile-concept .dh-visual-meta {
+      position: absolute;
+      z-index: 3;
+      top: 42px;
+      left: 43px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--dh-muted);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    #anatomy-smile-concept .dh-visual-meta::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--dh-gold);
+      content: "";
+    }
+
+    #anatomy-smile-concept .dh-diagram {
+      position: relative;
+      z-index: 1;
+      width: min(92%, 570px);
+      transform: scale(var(--dh-visual-scale));
+      transform-origin: 50% 52%;
+      transition: transform .45s ease;
+    }
+
+    #anatomy-smile-concept .dh-diagram svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    #anatomy-smile-concept .dh-smile-arc {
+      fill: none;
+      stroke: var(--dh-gold);
+      stroke-linecap: round;
+      stroke-width: 2;
+      opacity: .58;
+    }
+
+    #anatomy-smile-concept .dh-mini-tooth {
+      fill: color-mix(in srgb, var(--dh-panel) 82%, transparent);
+      stroke: color-mix(in srgb, var(--dh-blue) 30%, transparent);
+      stroke-width: 1.4;
+      transition: fill .35s ease, stroke .35s ease, transform .35s ease, opacity .35s ease;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    #anatomy-smile-concept .dh-mini-tooth.is-focus {
+      fill: color-mix(in srgb, var(--dh-sky) 15%, var(--dh-panel));
+      stroke: var(--dh-sky);
+      transform: translateY(-5px);
+    }
+
+    #anatomy-smile-concept .dh-natural-tooth,
+    #anatomy-smile-concept .dh-implant,
+    #anatomy-smile-concept .dh-layer,
+    #anatomy-smile-concept .dh-sparkles {
+      transition: opacity .45s ease, transform .45s ease;
+      transform-origin: center;
+    }
+
+    #anatomy-smile-concept .dh-tooth-shell {
+      fill: var(--dh-panel);
+      stroke: var(--dh-blue);
+      stroke-width: 4;
+    }
+
+    #anatomy-smile-concept .dh-dentin {
+      fill: color-mix(in srgb, var(--dh-gold) 18%, var(--dh-panel));
+      stroke: color-mix(in srgb, var(--dh-gold) 62%, var(--dh-panel));
+      stroke-width: 2;
+    }
+
+    #anatomy-smile-concept .dh-pulp {
+      fill: color-mix(in srgb, var(--dh-sky) 22%, var(--dh-panel));
+      stroke: var(--dh-sky);
+      stroke-width: 3;
+    }
+
+    #anatomy-smile-concept .dh-gum {
+      fill: color-mix(in srgb, var(--dh-sky) 9%, var(--dh-panel));
+      stroke: var(--dh-sky);
+      stroke-width: 2;
+    }
+
+    #anatomy-smile-concept .dh-crown {
+      fill: color-mix(in srgb, var(--dh-gold) 26%, transparent);
+      stroke: var(--dh-gold);
+      stroke-width: 3;
+    }
+
+    #anatomy-smile-concept .dh-veneer {
+      fill: color-mix(in srgb, var(--dh-sky) 20%, transparent);
+      stroke: var(--dh-sky);
+      stroke-width: 3;
+    }
+
+    #anatomy-smile-concept .dh-layer { opacity: .1; }
+    #anatomy-smile-concept .dh-implant { opacity: 0; transform: translateY(12px) scale(.96); }
+    #anatomy-smile-concept .dh-sparkles { opacity: 0; transform: scale(.82); }
+
+    #anatomy-smile-concept[data-active="protect"] .dh-enamel,
+    #anatomy-smile-concept[data-active="protect"] .dh-gum { opacity: 1; }
+    #anatomy-smile-concept[data-active="relieve"] .dh-pulp { opacity: 1; }
+    #anatomy-smile-concept[data-active="restore"] .dh-crown { opacity: 1; }
+    #anatomy-smile-concept[data-active="transform"] .dh-veneer,
+    #anatomy-smile-concept[data-active="transform"] .dh-sparkles { opacity: 1; transform: scale(1); }
+    #anatomy-smile-concept[data-active="replace"] .dh-natural-tooth { opacity: .08; transform: scale(.94); }
+    #anatomy-smile-concept[data-active="replace"] .dh-implant { opacity: 1; transform: translateY(0) scale(1); }
+
+    #anatomy-smile-concept .dh-callout {
+      position: absolute;
+      z-index: 3;
+      right: 38px;
+      bottom: 38px;
+      display: flex;
+      max-width: 180px;
+      align-items: center;
+      gap: 10px;
+      color: var(--dh-muted);
+      font-size: 11px;
+      line-height: 1.45;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    #anatomy-smile-concept .dh-callout-line {
+      width: 38px;
+      height: 1px;
+      flex: 0 0 auto;
+      background: var(--dh-gold);
+    }
+
+    #anatomy-smile-concept .dh-content {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: clamp(30px, 4vw, 52px);
+      background: var(--dh-panel);
+    }
+
+    #anatomy-smile-concept .dh-question {
+      margin: 0 0 22px;
+      color: var(--dh-muted);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    #anatomy-smile-concept .dh-service-list {
+      display: grid;
+      margin: 0 0 34px;
+      border-top: 1px solid var(--dh-rule);
+    }
+
+    #anatomy-smile-concept .dh-service-option {
+      display: grid;
+      min-height: 60px;
+      grid-template-columns: 32px minmax(0, 1fr) 22px;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border: 0;
+      border-bottom: 1px solid var(--dh-rule);
+      border-radius: 0;
+      background: transparent;
+      color: var(--dh-muted);
+      font: inherit;
+      text-align: left;
+      transition: color .25s ease, padding .25s ease;
+    }
+
+    #anatomy-smile-concept .dh-service-option:hover,
+    #anatomy-smile-concept .dh-service-option:focus-visible { color: var(--dh-ink); }
+
+    #anatomy-smile-concept .dh-service-option[aria-pressed="true"] {
+      padding-left: 10px;
+      color: var(--dh-accent);
+    }
+
+    #anatomy-smile-concept .dh-option-number {
+      font-size: 11px;
+      letter-spacing: .08em;
+    }
+
+    #anatomy-smile-concept .dh-option-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    #anatomy-smile-concept .dh-option-mark {
+      font-size: 18px;
+      text-align: right;
+      transition: transform .25s ease;
+    }
+
+    #anatomy-smile-concept .dh-service-option[aria-pressed="true"] .dh-option-mark { transform: rotate(45deg); }
+
+    #anatomy-smile-concept .dh-detail {
+      margin-top: auto;
+    }
+
+    #anatomy-smile-concept .dh-detail-label {
+      margin: 0 0 10px;
+      color: var(--dh-gold);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    #anatomy-smile-concept .dh-detail h3 {
+      margin: 0 0 12px;
+      color: var(--dh-ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 400;
+      line-height: 1.04;
+      letter-spacing: -.025em;
+    }
+
+    #anatomy-smile-concept .dh-detail-copy {
+      max-width: 430px;
+      margin: 0 0 20px;
+      color: var(--dh-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    #anatomy-smile-concept .dh-includes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    #anatomy-smile-concept .dh-includes li {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--dh-ink);
+      font-size: 12px;
+    }
+
+    #anatomy-smile-concept .dh-includes li::before {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--dh-sky);
+      content: "";
+    }
+
+    #anatomy-smile-concept .dh-explore {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      align-self: flex-start;
+      padding: 0 0 7px;
+      border: 0;
+      border-bottom: 1px solid var(--dh-gold);
+      border-radius: 0;
+      background: transparent;
+      color: var(--dh-ink);
+      font: 500 12px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    #anatomy-smile-concept .dh-explore-arrow { color: var(--dh-sky); font-size: 18px; }
+
+    @media (max-width: 780px) {
+      #anatomy-smile-concept .dh-intro { grid-template-columns: 1fr; align-items: start; }
+      #anatomy-smile-concept .dh-explorer { grid-template-columns: 1fr; }
+      #anatomy-smile-concept .dh-visual { min-height: 500px; }
+      #anatomy-smile-concept .dh-content { min-height: 600px; }
+    }
+
+    @media (max-width: 480px) {
+      #anatomy-smile-concept .dh-wrap { padding-inline: 14px; }
+      #anatomy-smile-concept .dh-visual { min-height: 430px; }
+      #anatomy-smile-concept .dh-visual::before { inset: 12px; }
+      #anatomy-smile-concept .dh-visual-meta { top: 27px; left: 27px; }
+      #anatomy-smile-concept .dh-callout { right: 24px; bottom: 24px; }
+      #anatomy-smile-concept .dh-content { min-height: 630px; padding: 30px 24px; }
+      #anatomy-smile-concept .dh-option-name { font-size: 19px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #anatomy-smile-concept *,
+      #anatomy-smile-concept *::before,
+      #anatomy-smile-concept *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+
+  <div class="dh-wrap">
+    <header class="dh-intro">
+      <div>
+        <p class="dh-kicker">Our services</p>
+        <h2 id="dh-services-title">Every part of your smile, <em>cared for.</em></h2>
+      </div>
+      <p class="dh-intro-copy">Start with what your smile needs. The illustration turns each treatment category into something patients can see, understand and remember.</p>
+    </header>
+
+    <div class="dh-explorer">
+      <div class="dh-visual" aria-live="polite">
+        <div class="dh-visual-meta">Interactive smile map</div>
+        <div class="dh-diagram">
+          <svg viewBox="0 0 560 540" role="img" aria-labelledby="dh-diagram-title dh-diagram-desc">
+            <title id="dh-diagram-title">Interactive anatomy of a smile</title>
+            <desc id="dh-diagram-desc">A curved row of teeth surrounds a detailed tooth diagram. Selecting a care category highlights the relevant part of the tooth.</desc>
+
+            <path class="dh-smile-arc" d="M66 135 Q280 25 494 135" />
+            <path class="dh-mini-tooth" d="M83 105 C99 89 122 89 138 105 C151 119 146 144 136 161 C128 176 129 204 116 208 C105 212 108 178 101 172 C94 178 97 212 86 208 C73 204 74 176 66 161 C56 144 51 119 64 105 C70 99 77 100 83 105Z" transform="translate(14 20) rotate(-19 101 148) scale(.76)" />
+            <path class="dh-mini-tooth" d="M83 105 C99 89 122 89 138 105 C151 119 146 144 136 161 C128 176 129 204 116 208 C105 212 108 178 101 172 C94 178 97 212 86 208 C73 204 74 176 66 161 C56 144 51 119 64 105 C70 99 77 100 83 105Z" transform="translate(103 -18) rotate(-10 101 148) scale(.83)" />
+            <path class="dh-mini-tooth is-focus" d="M83 105 C99 89 122 89 138 105 C151 119 146 144 136 161 C128 176 129 204 116 208 C105 212 108 178 101 172 C94 178 97 212 86 208 C73 204 74 176 66 161 C56 144 51 119 64 105 C70 99 77 100 83 105Z" transform="translate(194 -39) scale(.88)" />
+            <path class="dh-mini-tooth" d="M83 105 C99 89 122 89 138 105 C151 119 146 144 136 161 C128 176 129 204 116 208 C105 212 108 178 101 172 C94 178 97 212 86 208 C73 204 74 176 66 161 C56 144 51 119 64 105 C70 99 77 100 83 105Z" transform="translate(285 -18) rotate(10 101 148) scale(.83)" />
+            <path class="dh-mini-tooth" d="M83 105 C99 89 122 89 138 105 C151 119 146 144 136 161 C128 176 129 204 116 208 C105 212 108 178 101 172 C94 178 97 212 86 208 C73 204 74 176 66 161 C56 144 51 119 64 105 C70 99 77 100 83 105Z" transform="translate(374 20) rotate(19 101 148) scale(.76)" />
+
+            <g class="dh-natural-tooth">
+              <path class="dh-tooth-shell dh-layer dh-enamel" d="M183 176 C219 140 257 151 280 170 C303 151 341 140 377 176 C426 224 391 298 367 340 C345 378 348 461 317 474 C290 485 302 385 280 371 C258 385 270 485 243 474 C212 461 215 378 193 340 C169 298 134 224 183 176Z" />
+              <path class="dh-dentin dh-layer" d="M210 202 C234 181 260 189 280 204 C300 189 326 181 350 202 C382 232 358 287 338 321 C316 359 325 421 309 435 C293 428 301 353 280 338 C259 353 267 428 251 435 C235 421 244 359 222 321 C202 287 178 232 210 202Z" />
+              <path class="dh-pulp dh-layer" d="M268 229 C274 222 286 222 292 229 C305 246 298 275 289 294 C280 315 289 380 280 404 C271 380 280 315 271 294 C262 275 255 246 268 229Z" />
+              <path class="dh-gum dh-layer" d="M156 321 C215 294 345 294 404 321 L404 357 C341 333 219 333 156 357Z" />
+              <path class="dh-crown dh-layer" d="M182 177 C220 141 258 152 280 171 C302 152 340 141 378 177 C405 203 407 238 393 273 C329 248 231 248 167 273 C153 238 155 203 182 177Z" />
+              <path class="dh-veneer dh-layer" d="M190 183 C219 155 253 162 280 181 C307 162 341 155 370 183 C390 204 393 233 383 260 C322 239 238 239 177 260 C167 233 170 204 190 183Z" />
+              <g class="dh-sparkles" fill="var(--dh-gold)">
+                <path d="M391 184 L397 200 L413 206 L397 212 L391 228 L385 212 L369 206 L385 200Z" />
+                <path d="M157 239 L161 249 L171 253 L161 257 L157 267 L153 257 L143 253 L153 249Z" />
+              </g>
+            </g>
+
+            <g class="dh-implant">
+              <path d="M211 191 C235 164 262 168 280 182 C298 168 325 164 349 191 C379 225 363 274 340 302 L220 302 C197 274 181 225 211 191Z" fill="var(--dh-panel)" stroke="var(--dh-blue)" stroke-width="4" />
+              <path d="M240 299 L320 299 L311 331 L249 331Z" fill="color-mix(in srgb, var(--dh-gold) 22%, var(--dh-panel))" stroke="var(--dh-gold)" stroke-width="3" />
+              <path d="M257 330 L303 330 L295 446 Q280 466 265 446Z" fill="color-mix(in srgb, var(--dh-sky) 14%, var(--dh-panel))" stroke="var(--dh-sky)" stroke-width="4" />
+              <path d="M260 353 L300 353 M259 373 L299 373 M260 393 L298 393 M262 413 L297 413 M264 433 L295 433" fill="none" stroke="var(--dh-sky)" stroke-width="3" />
+            </g>
+          </svg>
+        </div>
+        <div class="dh-callout"><span class="dh-callout-line"></span><span id="dh-zone-label">Enamel + gumline</span></div>
+      </div>
+
+      <div class="dh-content">
+        <p class="dh-question">What does your smile need?</p>
+        <div class="dh-service-list" role="group" aria-label="Choose a dental care category">
+          <button class="dh-service-option cursor-interaction" type="button" data-service="protect" aria-pressed="true">
+            <span class="dh-option-number">01</span><span class="dh-option-name">Protect</span><span class="dh-option-mark" aria-hidden="true">+</span>
+          </button>
+          <button class="dh-service-option cursor-interaction" type="button" data-service="relieve" aria-pressed="false">
+            <span class="dh-option-number">02</span><span class="dh-option-name">Relieve</span><span class="dh-option-mark" aria-hidden="true">+</span>
+          </button>
+          <button class="dh-service-option cursor-interaction" type="button" data-service="restore" aria-pressed="false">
+            <span class="dh-option-number">03</span><span class="dh-option-name">Restore</span><span class="dh-option-mark" aria-hidden="true">+</span>
+          </button>
+          <button class="dh-service-option cursor-interaction" type="button" data-service="replace" aria-pressed="false">
+            <span class="dh-option-number">04</span><span class="dh-option-name">Replace</span><span class="dh-option-mark" aria-hidden="true">+</span>
+          </button>
+          <button class="dh-service-option cursor-interaction" type="button" data-service="transform" aria-pressed="false">
+            <span class="dh-option-number">05</span><span class="dh-option-name">Transform</span><span class="dh-option-mark" aria-hidden="true">+</span>
+          </button>
+        </div>
+
+        <div class="dh-detail" aria-live="polite">
+          <p class="dh-detail-label" id="dh-detail-label">Protect</p>
+          <h3 id="dh-detail-title">Keep healthy teeth healthy.</h3>
+          <p class="dh-detail-copy" id="dh-detail-copy">Routine, preventive care designed to catch concerns early and make every visit feel reassuring.</p>
+          <ul class="dh-includes" id="dh-includes">
+            <li>Dental check-ups</li><li>Professional cleaning</li><li>Pediatric dentistry</li><li>Preventive care</li>
+          </ul>
+          <button class="dh-explore cursor-interaction" type="button"><span id="dh-explore-label">Explore preventive care</span><span class="dh-explore-arrow" aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById("anatomy-smile-concept");
+      if (!root) return;
+
+      const services = {
+        protect: {
+          label: "Protect",
+          title: "Keep healthy teeth healthy.",
+          copy: "Routine, preventive care designed to catch concerns early and make every visit feel reassuring.",
+          items: ["Dental check-ups", "Professional cleaning", "Pediatric dentistry", "Preventive care"],
+          zone: "Enamel + gumline",
+          action: "Explore preventive care"
+        },
+        relieve: {
+          label: "Relieve",
+          title: "Treat pain at its source.",
+          copy: "Clear diagnosis and calm treatment planning for toothache, infection and urgent dental concerns.",
+          items: ["Root canal treatment", "Wisdom tooth care", "Dental emergencies", "Extractions"],
+          zone: "Pulp + root",
+          action: "Explore pain relief"
+        },
+        restore: {
+          label: "Restore",
+          title: "Repair strength and comfort.",
+          copy: "Thoughtful restorative treatment that rebuilds damaged teeth while preserving as much natural structure as possible.",
+          items: ["Tooth-coloured fillings", "Crowns", "Bridges", "Restorative dentistry"],
+          zone: "Crown structure",
+          action: "Explore restorative care"
+        },
+        replace: {
+          label: "Replace",
+          title: "Bring back what is missing.",
+          copy: "Carefully planned options for replacing missing teeth and restoring a natural, confident bite.",
+          items: ["Dental implants", "Fixed bridges", "Dentures", "Replacement planning"],
+          zone: "Implant + crown",
+          action: "Explore replacement options"
+        },
+        transform: {
+          label: "Transform",
+          title: "Refine the smile you already own.",
+          copy: "Personalised cosmetic care focused on natural proportions, healthy function and results that still feel like you.",
+          items: ["Teeth whitening", "Veneers", "Orthodontics", "Smile design"],
+          zone: "Visible smile surface",
+          action: "Explore smile treatments"
+        }
+      };
+
+      const detailLabel = root.querySelector("#dh-detail-label");
+      const detailTitle = root.querySelector("#dh-detail-title");
+      const detailCopy = root.querySelector("#dh-detail-copy");
+      const includes = root.querySelector("#dh-includes");
+      const zoneLabel = root.querySelector("#dh-zone-label");
+      const exploreLabel = root.querySelector("#dh-explore-label");
+      const buttons = [...root.querySelectorAll("[data-service]")];
+
+      function selectService(key, persist = true) {
+        const service = services[key];
+        if (!service) return;
+        root.dataset.active = key;
+        buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.service === key)));
+        detailLabel.textContent = service.label;
+        detailTitle.textContent = service.title;
+        detailCopy.textContent = service.copy;
+        zoneLabel.textContent = service.zone;
+        exploreLabel.textContent = service.action;
+        includes.replaceChildren(...service.items.map((item) => {
+          const element = document.createElement("li");
+          element.textContent = item;
+          return element;
+        }));
+
+        if (persist && window.openai?.setWidgetState) {
+          window.openai.setWidgetState({
+            modelContent: { selectedCareCategory: key },
+            privateContent: { selectedCareCategory: key }
+          }).catch(() => {});
+        }
+      }
+
+      buttons.forEach((button) => button.addEventListener("click", () => selectService(button.dataset.service)));
+
+      const savedKey = window.openai?.widgetState?.privateContent?.selectedCareCategory;
+      selectService(services[savedKey] ? savedKey : "protect", false);
+
+      window.addEventListener("openai:set_globals", (event) => {
+        const key = event.detail?.globals?.widgetState?.privateContent?.selectedCareCategory;
+        if (services[key]) selectService(key, false);
+      });
+
+      const visualState = { tone: "balanced", accent: "#143f91", motion: true };
+
+      function renderVisualOptions() {
+        root.style.setProperty("--dh-accent", visualState.accent);
+        root.style.setProperty("--dh-blue", visualState.accent);
+        root.style.setProperty("--dh-visual-scale", visualState.tone === "dramatic" ? "1.08" : visualState.tone === "clinical" ? ".94" : "1");
+        root.classList.toggle("dh-motion-off", !visualState.motion);
+      }
+
+      renderVisualOptions();
+
+      if (globalThis.Tweak) {
+        const tweak = new Tweak({ container: root, onChange: renderVisualOptions });
+        tweak.addSelect(visualState, "tone", {
+          label: "Illustration scale",
+          reference: "services.illustration-scale",
+          options: [
+            { label: "Clinical", value: "clinical" },
+            { label: "Balanced", value: "balanced" },
+            { label: "Dramatic", value: "dramatic" }
+          ]
+        });
+        tweak.addColorPicker(visualState, "accent", { label: "Brand blue", reference: "--dh-blue" });
+        tweak.addToggle(visualState, "motion", { label: "Motion", reference: "services.motion" });
+      }
+    })();
+  </script>
+</section>
