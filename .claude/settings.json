@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Users\\\\musta\\\\Desktop\\\\dr-hashim-and-associates\" && grep -o '<button type=\"button\" class=\"journey-step[^>]*>' /tmp/home2.html | head -2 && echo \"=== panels ===\" && grep -o '<div id=\"journey-panel[^>]*>' /tmp/home2.html | head -2 && echo \"=== connectors ===\" && grep -o '<span class=\"journey-connector[^>]*>' /tmp/home2.html | head -2)",
+      "Read(//tmp/**)",
+      "PowerShell($pids = \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess | Select-Object -Unique; if \\($pids\\) { foreach \\($p in $pids\\) { Write-Output \"Killing PID $p\"; Stop-Process -Id $p -Force -ErrorAction SilentlyContinue } } else { Write-Output \"nothing listening on 3000\" })"
+    ]
+  }
+}

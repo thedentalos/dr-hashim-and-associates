@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smile Journey — prototype</title>
+<style>
+  :root {
+    --navy: #1B3A8C;
+    --blue: #2E9ED6;
+    --white: #FFFFFF;
+    --tint: #EBF5FC;
+    --ink-muted: rgba(27, 58, 140, .72);
+    --line: rgba(27, 58, 140, .16);
+    --display: Georgia, "Times New Roman", serif;
+    --sans: Arial, "Helvetica Neue", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--white);
+    color: var(--navy);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  h2, h3, h4 { margin: 0; font-family: var(--display); font-weight: 400; letter-spacing: -.03em; }
+  h2 em { color: var(--blue); font-style: normal; }
+  p { margin: 0; }
+
+  /* ── Section shell ───────────────────────────────────────── */
+  .journey-section {
+    padding: 72px 20px 80px;
+    background: var(--tint);
+  }
+
+  .journey-wrap { max-width: 1200px; margin: 0 auto; }
+  .journey-wrap.is-simulated {
+    max-width: 430px;
+    padding: 0 4px;
+  }
+
+  .eyebrow {
+    margin: 0 0 14px;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+
+  .journey-head h2 {
+    max-width: 640px;
+    font-size: clamp(36px, 8vw, 58px);
+    line-height: 1.04;
+  }
+
+  .journey-intro {
+    max-width: 590px;
+    margin-top: 20px;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+
+  .journey-foot { margin-top: 40px; }
+  .journey-foot a {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .journey-foot a:hover { color: var(--blue); }
+
+  /* ── Shared: procedure index ─────────────────────────────
+     No boxes, no icons-in-frames, no "Learn more" pill. A
+     hairline-separated editorial list, which is the idiom the
+     rest of the site already uses (.principle-list, .reason-grid).
+     The title is the link; a stretched pseudo-element makes the
+     whole row clickable, so the accessible name stays short.  */
+  .j-procs {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+  }
+
+  .j-proc {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 26px;
+    align-items: baseline;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .j-proc-label {
+    grid-column: 1;
+    color: var(--blue);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .j-proc-title {
+    grid-column: 1;
+    font-family: var(--display);
+    font-size: clamp(25px, 2.8vw, 34px);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -.03em;
+  }
+  .j-proc-title::after { position: absolute; inset: 0; content: ""; }
+
+  .j-proc-copy {
+    grid-column: 1;
+    max-width: 44ch;
+    margin: 10px 0 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .j-proc-arrow {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    color: var(--blue);
+    font-size: 19px;
+    opacity: .4;
+    transition: transform 260ms cubic-bezier(.22, 1, .36, 1), opacity 260ms ease;
+  }
+  .j-proc:hover .j-proc-arrow { opacity: 1; transform: translateX(6px); }
+  .j-proc:has(.j-proc-title:focus-visible) .j-proc-arrow { opacity: 1; transform: translateX(6px); }
+
+  /* ══ DESKTOP: arch + detail panel ═════════════════════════ */
+  .j-map {
+    position: relative;
+    height: 260px;
+    margin-top: 46px;
+  }
+
+  .j-curve {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .j-base, .j-progress {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .j-base { stroke: var(--line); }
+  .j-progress {
+    stroke: var(--blue);
+    stroke-dasharray: 0 100;
+    transition: stroke-dasharray 520ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .j-steps {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .j-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--ink-muted);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    transform: translateY(calc(var(--y) * 1px - 24px));
+    transition: color 260ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .j-step:hover, .j-step:focus-visible, .j-step.is-active { color: var(--navy); }
+
+  .j-dot {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--ink-muted);
+    font-size: 11px;
+    letter-spacing: .04em;
+    transition: background 260ms ease, border-color 260ms ease, color 260ms ease,
+                box-shadow 260ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .j-step:hover .j-dot { border-color: var(--blue); color: var(--blue); }
+  .j-step.is-active .j-dot {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 0 0 7px rgba(46, 158, 214, .13);
+    transform: scale(1.08);
+  }
+
+  .j-name { font-family: var(--display); font-size: 19px; line-height: 1.1; }
+
+  .j-panel {
+    display: grid;
+    grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+    gap: 52px;
+    margin-top: 34px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+  .j-panel.is-swapping { animation: jFade 380ms cubic-bezier(.22, 1, .36, 1); }
+
+  .j-kicker {
+    margin-bottom: 15px;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+  .j-panel h3 { margin-bottom: 15px; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.06; }
+  .j-copy { color: var(--ink-muted); font-size: 15px; line-height: 1.8; }
+
+  /* ══ MOBILE: vertical winding rail + accordion ════════════ */
+  .j-list { margin: 0; padding: 0; list-style: none; }
+
+  .j-item { position: relative; }
+
+  .j-head {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 52px minmax(0, 1fr) 22px;
+    gap: 14px;
+    align-items: center;
+    min-height: 68px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink-muted);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: color 240ms ease;
+  }
+  .j-head:hover, .j-head:focus-visible { color: var(--navy); }
+  .j-item.is-open .j-head { color: var(--navy); }
+
+  .j-rdot {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-self: start center;
+    margin-top: 16px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--ink-muted);
+    font-size: 10.5px;
+    transition: background 240ms ease, border-color 240ms ease, color 240ms ease, transform 240ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .j-item.is-open .j-rdot {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--white);
+    transform: scale(1.1);
+  }
+
+  .j-rlabel { display: grid; gap: 3px; padding: 16px 0; }
+  .j-rname { font-family: var(--display); font-size: 22px; line-height: 1.1; }
+  .j-rhint { color: var(--ink-muted); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+
+  .j-chev {
+    width: 17px;
+    height: 17px;
+    justify-self: end;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 300ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .j-item.is-open .j-chev { transform: rotate(180deg); }
+
+  /* the wound thread between dots — stretches with the open panel */
+  .j-conn {
+    position: absolute;
+    top: 34px;
+    left: 0;
+    width: 52px;
+    height: 100%;
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 420ms ease;
+  }
+  .j-conn.is-done { stroke: var(--blue); }
+
+  .j-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 360ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .j-item.is-open .j-body { grid-template-rows: 1fr; }
+
+  .j-body-inner {
+    overflow: hidden;
+    padding-left: 52px;
+  }
+  .j-body-inner > h3 { margin-bottom: 12px; font-size: 25px; line-height: 1.1; }
+  .j-body-inner > .j-copy { font-size: 14px; }
+  .j-body-inner > .j-procs { margin: 24px 0 30px; }
+
+  .journey-rail .j-proc { padding: 20px 0; gap: 4px 16px; }
+  .journey-rail .j-proc-title { font-size: 24px; }
+  .journey-rail .j-proc-copy { font-size: 13.5px; }
+  .journey-rail .j-proc-arrow { font-size: 17px; }
+
+  .j-rule { border-bottom: 1px solid var(--line); }
+
+  @keyframes jFade { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+
+  /* ── Prototype-only layout switcher ─────────────────────── */
+  .proto-bar {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, .12);
+    background: rgba(255, 255, 255, .95);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    font-size: 11px;
+  }
+  .proto-bar > span { padding: 0 8px 0 6px; color: rgba(0, 0, 0, .45); letter-spacing: .1em; text-transform: uppercase; font-size: 9px; }
+  .proto-bar button {
+    padding: 7px 11px;
+    border: 0;
+    background: transparent;
+    color: rgba(0, 0, 0, .62);
+    font: inherit;
+    cursor: pointer;
+  }
+  .proto-bar button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+
+  @media (min-width: 700px) {
+    .journey-section { padding: 104px 7% 112px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<section class="journey-section" id="services" aria-labelledby="journey-title">
+  <div class="journey-wrap" id="journey-wrap">
+    <div class="journey-head">
+      <p class="eyebrow">Our services</p>
+      <h2 id="journey-title">Clear care for<br><em>every stage.</em></h2>
+      <p class="journey-intro">Explore the clinic&rsquo;s areas of care as one connected path &mdash; from keeping teeth healthy, through treatment when something changes, to the smile you see first. Treatment availability and suitability are confirmed at your consultation.</p>
+    </div>
+
+    <div id="journey" class="journey journey-arch"></div>
+
+    <p class="journey-foot"><a href="/services">View all services and details <span aria-hidden="true">&rarr;</span></a></p>
+  </div>
+</section>
+
+<div class="proto-bar" role="group" aria-label="Prototype layout preview">
+  <span>Prototype</span>
+  <button type="button" data-mode="auto" aria-pressed="true">Auto</button>
+  <button type="button" data-mode="arch" aria-pressed="false">Desktop</button>
+  <button type="button" data-mode="rail" aria-pressed="false">Phone</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ── Content ───────────────────────────────────────────────
+     Stage narratives are reworked from the smile-journey concept.
+     Service titles, labels and copy are the live entries from app/data.ts,
+     so nothing here is rewritten copy.                             */
+
+  const SERVICES = {
+    diagnostics:  { title: "Diagnostics",           label: "Understanding your needs", copy: "A careful assessment to understand your oral health and discuss suitable next steps." },
+    endodontics:  { title: "Endodontics",           label: "Root canal care",          copy: "Care focused on the inside of a tooth when root canal treatment is appropriate." },
+    periodontics: { title: "Periodontics",          label: "Gum treatment",            copy: "Assessment and care for the gums and the tissues that support your teeth." },
+    pediatric:    { title: "Pediatric Dentistry",   label: "Care for children",        copy: "Age-appropriate dental visits with clear explanations and a gentle pace." },
+    surgery:      { title: "Oral Surgery",          label: "Surgical dental care",     copy: "Consultation and surgical care, including extractions when clinically appropriate." },
+    orthodontics: { title: "Orthodontics",          label: "Braces and aligners",      copy: "Options for improving tooth alignment and bite for children, teens, and adults." },
+    cosmetic:     { title: "Cosmetic Dentistry",    label: "Smile-focused care",       copy: "Thoughtful options to discuss the shade, shape, and appearance of your smile." },
+    restorative:  { title: "Restorative Dentistry", label: "Restoring comfort",        copy: "Individual care for damaged or missing teeth, explained clearly and planned with you." }
+  };
+
+  const STAGES = [
+    { index: "01", name: "Prevent",  title: "Start with a healthy baseline.",
+      copy: "Regular visits build trust, spot concerns early, and help every patient understand their own oral health.",
+      services: ["pediatric", "periodontics"] },
+    { index: "02", name: "Diagnose", title: "Understand before deciding.",
+      copy: "A careful examination and a clear explanation turn uncertainty into an informed, comfortable plan.",
+      services: ["diagnostics"] },
+    { index: "03", name: "Treat",    title: "Resolve the immediate concern.",
+      copy: "Focused treatment relieves discomfort, manages disease, and protects the surrounding teeth and gums.",
+      services: ["endodontics", "surgery"] },
+    { index: "04", name: "Restore",  title: "Rebuild strength and function.",
+      copy: "Restorative care brings back comfortable chewing while respecting the natural structure of the tooth.",
+      services: ["restorative"] },
+    { index: "05", name: "Refine",   title: "Shape the smile you see first.",
+      copy: "Once the foundations are healthy, alignment and appearance can be refined at a pace you choose.",
+      services: ["orthodontics", "cosmetic"] }
+  ];
+
+  /* Dot positions on the desktop arch. These are the exact points where the
+     quadratic Bezier M100 80 Q500 270 900 80 evaluates at t = 0, .25, .5, .75, 1
+     inside a 1000 × 260 viewBox — so each dot sits precisely on the line. */
+  const DOT_Y = [80, 151.25, 175, 151.25, 80];
+  const PROGRESS = [0, 25, 50, 75, 100];
+
+  const mount = document.getElementById("journey");
+  const wrap = document.getElementById("journey-wrap");
+  const wide = window.matchMedia("(min-width: 880px)");
+
+  let forced = "auto";   // prototype-only override
+  let active = 0;        // desktop: selected stage
+  let open = null;       // mobile: expanded stage, or null for all-collapsed
+
+  /* ── Shared builders ───────────────────────────────────── */
+
+  function procHTML(key) {
+    const s = SERVICES[key];
+    return `<li class="j-proc">
+      <span class="j-proc-label">${s.label}</span>
+      <a class="j-proc-title" href="/services#${key}">${s.title}</a>
+      <span class="j-proc-arrow" aria-hidden="true">&rarr;</span>
+      <p class="j-proc-copy">${s.copy}</p>
+    </li>`;
+  }
+
+  function procsHTML(stage) {
+    return `<ul class="j-procs">${stage.services.map(procHTML).join("")}</ul>`;
+  }
+
+  /* ── Desktop: arch + detail panel ──────────────────────── */
+
+  function renderArch() {
+    mount.className = "journey journey-arch";
+    mount.innerHTML = `
+      <div class="j-map">
+        <svg class="j-curve" viewBox="0 0 1000 260" preserveAspectRatio="none" aria-hidden="true">
+          <path class="j-base"     d="M100 80 Q500 270 900 80" pathLength="100"/>
+          <path class="j-progress" id="j-progress" d="M100 80 Q500 270 900 80" pathLength="100"
+                style="stroke-dasharray:${PROGRESS[active]} 100"/>
+        </svg>
+        <div class="j-steps" role="group" aria-label="Stages of care">
+          ${STAGES.map((s, i) => `
+            <button type="button" class="j-step${i === active ? " is-active" : ""}"
+                    data-i="${i}" style="--y:${DOT_Y[i]}" aria-pressed="${i === active}">
+              <span class="j-dot">${s.index}</span>
+              <span class="j-name">${s.name}</span>
+            </button>`).join("")}
+        </div>
+      </div>
+      <div class="j-panel" id="j-panel" aria-live="polite">
+        <div>
+          <p class="j-kicker">Stage ${STAGES[active].index} &middot; ${STAGES[active].name}</p>
+          <h3>${STAGES[active].title}</h3>
+          <p class="j-copy">${STAGES[active].copy}</p>
+        </div>
+        ${procsHTML(STAGES[active])}
+      </div>`;
+
+    mount.querySelectorAll(".j-step").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const i = Number(btn.dataset.i);
+        if (i === active) return;
+        active = i;
+        mount.querySelectorAll(".j-step").forEach((b) => {
+          const on = Number(b.dataset.i) === i;
+          b.classList.toggle("is-active", on);
+          b.setAttribute("aria-pressed", String(on));
+        });
+        document.getElementById("j-progress").style.strokeDasharray = `${PROGRESS[i]} 100`;
+
+        const panel = document.getElementById("j-panel");
+        panel.classList.remove("is-swapping");
+        panel.innerHTML = `
+          <div>
+            <p class="j-kicker">Stage ${STAGES[i].index} &middot; ${STAGES[i].name}</p>
+            <h3>${STAGES[i].title}</h3>
+            <p class="j-copy">${STAGES[i].copy}</p>
+          </div>
+          ${procsHTML(STAGES[i])}`;
+        void panel.offsetWidth;   // restart the fade
+        panel.classList.add("is-swapping");
+      });
+    });
+  }
+
+  /* ── Mobile: winding rail + accordion ──────────────────── */
+
+  function renderRail() {
+    mount.className = "journey journey-rail";
+    mount.innerHTML = `<ol class="j-list">${
+      STAGES.map((s, i) => {
+        const isOpen = open === i;
+        const travelled = open !== null && i < open;
+        return `<li class="j-item${isOpen ? " is-open" : ""}${i < STAGES.length - 1 ? "" : " j-rule"}">
+          <button type="button" class="j-head" data-i="${i}" aria-expanded="${isOpen}" aria-controls="j-body-${i}">
+            <span class="j-rdot">${s.index}</span>
+            <span class="j-rlabel">
+              <span class="j-rname">${s.name}</span>
+              <span class="j-rhint">${s.services.length} ${s.services.length === 1 ? "procedure" : "procedures"}</span>
+            </span>
+            <svg class="j-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="j-body" id="j-body-${i}">
+            <div class="j-body-inner">
+              <h3>${s.title}</h3>
+              <p class="j-copy">${s.copy}</p>
+              ${procsHTML(s)}
+            </div>
+          </div>
+          ${i < STAGES.length - 1
+            ? `<svg class="j-conn${travelled ? " is-done" : ""}" viewBox="0 0 52 100" preserveAspectRatio="none" aria-hidden="true">
+                 <path d="M26 0 C37 30 15 70 26 100"/>
+               </svg>`
+            : ""}
+        </li>`;
+      }).join("")
+    }</ol>`;
+
+    mount.querySelectorAll(".j-head").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const i = Number(btn.dataset.i);
+        open = open === i ? null : i;   // tapping the open stage closes it
+        renderRail();
+      });
+    });
+  }
+
+  /* ── Mode handling ─────────────────────────────────────── */
+
+  function mode() {
+    if (forced !== "auto") return forced;
+    return wide.matches ? "arch" : "rail";
+  }
+
+  function render() {
+    const m = mode();
+    wrap.classList.toggle("is-simulated", forced === "rail" && wide.matches);
+    if (m === "arch") renderArch();
+    else renderRail();
+  }
+
+  wide.addEventListener("change", render);
+
+  document.querySelectorAll(".proto-bar button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      forced = btn.dataset.mode;
+      document.querySelectorAll(".proto-bar button").forEach((b) =>
+        b.setAttribute("aria-pressed", String(b === btn)));
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
