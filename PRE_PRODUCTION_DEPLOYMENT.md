@@ -20,7 +20,7 @@ This document is the checklist to work through on the day.
 | `sitemap.xml` / `robots.txt` | Generated **at build time** — see step 2 |
 | GoDaddy/registrar DNS | **You** — one-time setup in step 4 |
 
-Node is pinned to `22.x` through `engines.node` in `package.json`. Next.js 16 requires ≥ 20.9.0; the pin stops a future Vercel default change from breaking a build silently.
+**Node version is set by Vercel, not by this repository.** `package.json` declares `engines.node: 22.x`, but Vercel's own **Settings → General → Node.js Version** setting takes precedence, and the project currently runs **24.x**. The `engines` field still acts as a floor for local and CI builds. Next.js 16 requires ≥ 20.9.0; if you want the deploy to match the declared version, set it in the dashboard rather than assuming the field is honoured.
 
 ---
 
@@ -258,4 +258,4 @@ npm audit            # should report 0 vulnerabilities
 - **`.env.local` is gitignored, but a plain `.env` is not.** Add `.env` to `.gitignore` before anyone creates one.
 - **The Google reviews cache is 1 hour.** `/` and `/reviews` revalidate hourly, which is well inside the 30-day limit the Places terms place on caching place data. If reviews ever look stale, that is the number to look at — not a bug.
 - **Monitoring.** Nothing currently alerts if the site goes down. Consider an uptime monitor pointed at the homepage; Vercel's own dashboard shows build failures but not availability from a visitor's perspective.
-- **Node version drift** is handled by `engines.node` in `package.json`. Do not remove it.
+- **Node version.** `engines.node` in `package.json` is a floor for local and CI builds, but Vercel's dashboard **Node.js Version** setting overrides it. The two can disagree without any warning — check the dashboard, not the file, when the version matters.
