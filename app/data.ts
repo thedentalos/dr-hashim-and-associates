@@ -5,9 +5,18 @@ export const WHATSAPP_URL = "https://wa.me/923008557144";
 
 export const CLINIC_ADDRESS = "1st Floor, Pehchan Mall, G-9 Markaz, Islamabad";
 
+/** Same number as the WhatsApp line. Kept in both forms so the structured data
+ *  can carry E.164 while the page shows it the way the clinic writes it. */
+export const CLINIC_PHONE_DISPLAY = "0300 855 7144";
+export const CLINIC_PHONE_E164 = "+923008557144";
+
 export const CLINIC_EMAIL = "drhahsimandassociates@gmail.com";
 
-export const CLINIC_HOURS = "10:00 to 8:30";
+export const CLINIC_HOURS = "10:00 AM to 8:30 PM";
+
+/** The same hours, in the 24-hour form schema.org expects. */
+export const CLINIC_OPENS = "10:00";
+export const CLINIC_CLOSES = "20:30";
 
 export const GOOGLE_MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Dr%20Hashim%20and%20Associates%20Dental%20Clinic&query_place_id=ChIJ8zBMenhKz2cRBnRXb0-JHtI";
@@ -72,14 +81,51 @@ export const careStages = [
   },
 ] as const;
 
+/**
+ * The current clinic offer, used by both the top banner and the homepage offer
+ * section so the two can never state different terms.
+ *
+ * Terms as confirmed by the clinic: free consultation for everyone, 30% off
+ * general dental procedures, valid 12 months from the first visit, no deadline.
+ * Specialist work and lab fees are excluded.
+ */
+export const offer = {
+  bannerLong: "Free Consultation + 30% off on all general dental procedures",
+  bannerShort: "Free Consultation + 30% off",
+  heading: "Free Consultation + 30% off on all general dental procedures",
+  audience: "Available to all patients, for 12 months from your first visit.",
+  terms: "Excludes orthodontics, implants, cosmetic treatment and laboratory fees.",
+} as const;
+
+/* Extended service detail lives in its own module — see service-details.ts. */
+export { serviceDetails, type ServiceDetail } from "./service-details";
+
+/**
+ * Clinical before/after examples supplied by the clinic. The alt text names
+ * the treatment factually — DESIGN.md §16 forbids unsupported outcome claims,
+ * so nothing here promises a result. The homepage previews the first three.
+ *
+ * `doctor` is the slug of the clinician who carried out the treatment, read
+ * from the clinic's own filenames in the supplied case folder. It is never
+ * inferred from a clinician's stated specialty — a guessed attribution would
+ * credit one dentist with another's clinical work.
+ */
 export const cases = [
-  { src: "/media/results1.webp", label: "Restorative", alt: "Before and after view of a restored smile" },
-  { src: "/media/results2.webp", label: "Restorative", alt: "Before and after view following dental care" },
-  { src: "/media/results3.webp", label: "Cosmetic", alt: "Before and after view of a smile" },
+  { src: "/media/case-composite-filling.webp", label: "Restorative", doctor: "dr-baryal-khan", alt: "Before and after view of a composite filling carried out at Dr Hashim & Associates" },
+  { src: "/media/case-composite-fillings.webp", label: "Restorative", doctor: "dr-baryal-khan", alt: "Before and after view of composite fillings carried out at Dr Hashim & Associates" },
+  { src: "/media/case-composite-veneers.webp", label: "Cosmetic", doctor: "dr-baryal-khan", alt: "Before and after view of composite veneers carried out at Dr Hashim & Associates" },
+  { src: "/media/case-scaling-whitening.webp", label: "Cosmetic", doctor: "dr-hashim-asad", alt: "Before and after view of scaling, polishing and teeth whitening carried out at Dr Hashim & Associates" },
+  { src: "/media/case-teeth-whitening.webp", label: "Cosmetic", doctor: "dr-hashim-asad", alt: "Before and after view of teeth whitening carried out at Dr Hashim & Associates" },
+  { src: "/media/case-zirconia-veneers.webp", label: "Cosmetic", doctor: "dr-hashim-asad", alt: "Before and after view of zirconia veneers carried out at Dr Hashim & Associates" },
 ] as const;
 
+/**
+ * `slug` gives each clinician a stable, indexable profile URL at /team/<slug>.
+ * It is the join key between a doctor and the `cases` entries they performed.
+ */
 export const doctors = [
   {
+    slug: "dr-hashim-asad",
     name: "Dr. Hashim Asad",
     initials: "HA",
     designation: "Dental Surgeon / Principal",
@@ -87,6 +133,7 @@ export const doctors = [
     bio: "Lead clinician and founder of the practice. Experienced in general dentistry with a focus on Endodontics and patient-centred, comprehensive care.",
   },
   {
+    slug: "dr-baryal-khan",
     name: "Dr. Baryal Khan",
     initials: "BK",
     designation: "Dental Surgeon",
@@ -94,6 +141,7 @@ export const doctors = [
     bio: "Specialist in digital treatment planning, esthetic dentistry, and clear aligner therapy. Practices standardized pain-free dentistry.",
   },
   {
+    slug: "dr-ozair-shirazi",
     name: "Dr. Ozair Shirazi",
     initials: "OS",
     designation: "Oral & Maxillofacial Surgeon",
@@ -101,6 +149,7 @@ export const doctors = [
     bio: "Handles complex extractions, surgical procedures, and facial trauma cases.",
   },
   {
+    slug: "dr-zohra-mansoor",
     name: "Dr. Zohra Mansoor",
     initials: "ZM",
     designation: "Orthodontist",
@@ -108,3 +157,15 @@ export const doctors = [
     bio: "Provides braces, aligner therapy, and bite correction for children, teens, and adults.",
   },
 ] as const;
+
+export type Doctor = (typeof doctors)[number];
+export type CaseItem = (typeof cases)[number];
+
+export function getDoctor(slug: string): Doctor | undefined {
+  return doctors.find((doctor) => doctor.slug === slug);
+}
+
+/** The clinical examples credited to one clinician, in gallery order. */
+export function getCasesForDoctor(slug: string): ReadonlyArray<CaseItem> {
+  return cases.filter((item) => item.doctor === slug);
+}

@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { careStages, services } from "./data";
-import { ServiceIcon } from "./service-icon";
 
 /**
  * Every service stays in the server-rendered HTML. Inactive stage panels are
@@ -24,24 +23,45 @@ const DOT_Y = [57, 102, 117, 102, 57];
 /** How far the accent stroke has travelled along the arc, per stage. */
 const PROGRESS = [0, 25, 50, 75, 100];
 
-const SERVICE_BY_KEY = new Map<string, { service: (typeof services)[number]; index: number }>(
-  services.map((service, index) => [service.key, { service, index }]),
+const SERVICE_BY_KEY = new Map<string, (typeof services)[number]>(
+  services.map((service) => [service.key, service]),
 );
 
 export function SmileJourney() {
-  const [active, setActive] = useState(0);
+  /**
+   * `null` means every stage is collapsed — a state that only exists in the
+   * phone layout, where the stages are an accordion and closing the open one is
+   * a reasonable thing to want. On wider screens the same markup is a set of
+   * tabs with the panel below, so exactly one is always open.
+   */
+  const [active, setActive] = useState<number | null>(0);
+
+  // Phone layout is the accordion; from tablet up it is the arch. Read at
+  // click-time rather than render-time, so nothing differs during hydration.
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 768px)");
+    const restore = () => setActive((current) => (wide.matches && current === null ? 0 : current));
+    restore();
+    wide.addEventListener("change", restore);
+    return () => wide.removeEventListener("change", restore);
+  }, []);
+
+  function selectStage(index: number) {
+    const isAccordion = !window.matchMedia("(min-width: 768px)").matches;
+    setActive((current) => (isAccordion && current === index ? null : index));
+  }
 
   return (
     <div className="journey">
       <svg className="journey-curve" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <path className="journey-curve-base" d={CURVE_PATH} pathLength={100} />
-        <path className="journey-curve-progress" d={CURVE_PATH} pathLength={100} style={{ strokeDasharray: `${PROGRESS[active]} 100` }} />
+        <path className="journey-curve-progress" d={CURVE_PATH} pathLength={100} style={{ strokeDasharray: `${PROGRESS[active ?? 0]} 100` }} />
       </svg>
 
       {careStages.slice(0, -1).map((stage, index) => (
         <span
           key={`connector-${stage.key}`}
-          className={`journey-connector${index < active ? " is-travelled" : ""}`}
+          className={`journey-connector${active !== null && index < active ? " is-travelled" : ""}`}
           style={{ "--row": index * 2 + 1 } as CSSProperties}
           aria-hidden="true"
         />
@@ -55,7 +75,7 @@ export function SmileJourney() {
           style={{ "--row": index * 2 + 1, "--col": index + 1, "--dot-y": DOT_Y[index] } as CSSProperties}
           aria-expanded={index === active}
           aria-controls={`journey-panel-${stage.key}`}
-          onClick={() => setActive(index)}
+          onClick={() => selectStage(index)}
         >
           <span className="journey-dot">{stage.index}</span>
           <span className="journey-step-name">{stage.name}</span>
@@ -78,17 +98,16 @@ export function SmileJourney() {
 
           <ul className="journey-procedures">
             {stage.services.map((key) => {
-              const entry = SERVICE_BY_KEY.get(key);
-              if (!entry) return null;
+              const service = SERVICE_BY_KEY.get(key);
+              if (!service) return null;
               return (
                 <li className="journey-procedure" key={key}>
-                  <span className="journey-procedure-label">{entry.service.label}</span>
+                  <span className="journey-procedure-label">{service.label}</span>
                   <h4 className="journey-procedure-title">
-                    <ServiceIcon index={entry.index} />
-                    <Link href={`/services#${key}`}>{entry.service.title}</Link>
+                    <Link href={`/services#${key}`}>{service.title}</Link>
                   </h4>
                   <span className="journey-procedure-arrow" aria-hidden="true">&rarr;</span>
-                  <p className="journey-procedure-copy">{entry.service.copy}</p>
+                  <p className="journey-procedure-copy">{service.copy}</p>
                 </li>
               );
             })}

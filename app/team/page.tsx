@@ -5,19 +5,20 @@ import { doctors } from "../data";
 export const metadata: Metadata = {
   title: "Our Team",
   description: "Meet the dental surgeons and specialists at Dr Hashim & Associates Dental Clinic in Islamabad.",
+  alternates: { canonical: "/team" },
 };
 
 export default function TeamPage() {
   return (
     <PageFrame>
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <section className="inner-hero team-hero" aria-labelledby="team-page-title">
           <div><p className="eyebrow">Our team</p><h1 id="team-page-title">Different specialties.<br /><em>One thoughtful team.</em></h1><p>Meet the clinicians who bring together general, restorative, digital, surgical, and orthodontic care.</p></div>
-          <div className="team-hero-note"><span aria-hidden="true">04</span><p>Clinicians represented with the credentials and specialties supplied by the practice.</p></div>
+          <div className="team-hero-note"><span aria-hidden="true">{String(doctors.length).padStart(2, "0")}</span><p>One team covering general, restorative, digital, surgical, and orthodontic care.</p></div>
         </section>
 
         <section className="section team-directory" aria-labelledby="directory-title">
-          <SectionHeading eyebrow="Meet the clinicians" title="Professional expertise." accent="Patient-centred care." copy="Professional photographs are intentionally shown as placeholders until the clinic supplies approved headshots." id="directory-title" />
+          <SectionHeading eyebrow="Meet the clinicians" title="Professional expertise." accent="Patient-centred care." copy="Select a clinician to read their profile and see the clinical work they have carried out." id="directory-title" />
           <div className="doctor-grid doctor-grid-full">{doctors.map((doctor) => <DoctorCard doctor={doctor} key={doctor.name} />)}</div>
         </section>
 

@@ -1,15 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import clinicLogo from "../logo.png";
-import { WHATSAPP_URL } from "./data";
+import type { CSSProperties, ReactNode } from "react";
+// A 512px derivative of logo.png (2000px, 1.4MB). The mark renders into a
+// 132px box that the header clips to a 48px circle, so 512 covers 2x with room
+// to spare — the visible crop is pixel-equivalent to the original. logo.png is
+// left untouched as the source of truth.
+import clinicLogo from "../logo-mark.webp";
+import type { Doctor } from "./data";
+import { CLINIC_HOURS, CLINIC_PHONE_DISPLAY, WHATSAPP_URL } from "./data";
+import { PromoBanner } from "./promo-banner";
 import { MobileNavigation, MotionController } from "./ui";
 
 export function Brand() {
   return (
-    <Link className="brand" href="/" aria-label="Dr Hashim and Associates Dental Clinic home">
+    <Link className="brand" href="/" aria-label="Dr Hashim &amp; Associates Dental Clinic home">
       <span className="brand-mark" aria-hidden="true">
-        <Image className="brand-mark-source" src={clinicLogo} alt="" loading="eager" sizes="132px" />
+        <Image className="brand-mark-source" src={clinicLogo} alt="" sizes="132px" />
       </span>
       <span className="brand-name"><span>Dr Hashim</span><span>&amp; Associates Dental Clinic</span></span>
     </Link>
@@ -20,10 +26,15 @@ export function BookingLink({ children = "Book an Appointment", className = "but
   return <Link className={className} href="/book-appointment">{children}</Link>;
 }
 
-export function Header() {
+/**
+ * The promotion banner lives inside `.site-header-shell`, which is the sticky
+ * element — so the banner and the navigation pin together as one bar. Section
+ * scroll offsets are adjusted for the extra height in globals.css.
+ */
+export function Header({ showOffer = false }: { showOffer?: boolean }) {
   return (
     <div className="site-header-shell" id="top">
-      {/* Future promotion banner slot: render it here, directly above the navbar. */}
+      {showOffer && <PromoBanner />}
       <header className="site-header">
         <Brand />
         <MobileNavigation />
@@ -33,12 +44,12 @@ export function Header() {
   );
 }
 
-export function PageFrame({ children }: { children: ReactNode }) {
+export function PageFrame({ children, showOffer = false }: { children: ReactNode; showOffer?: boolean }) {
   return (
     <>
       <MotionController />
       <a className="skip" href="#main">Skip to content</a>
-      <Header />
+      <Header showOffer={showOffer} />
       {children}
       <WhatsAppButton />
       <Footer />
@@ -57,17 +68,56 @@ export function WhatsAppButton() {
   );
 }
 
+/**
+ * Photographic backdrop for the route heroes (services, cases, contact,
+ * reviews, booking). Rendered through next/image rather than a CSS
+ * background so it is optimised, preloaded as the page's LCP, and carries
+ * real alt text — a CSS background would be invisible to search.
+ *
+ * `position` sets the vertical slice the wide desktop band shows; the
+ * source photographs are portrait, so the default centre would clip heads.
+ * It is ignored on phones, where the band crops horizontally instead.
+ */
+export function HeroBackdrop({ src, alt, position = "50%" }: { src: string; alt: string; position?: string }) {
+  return (
+    <div className="route-hero-media" style={{ "--hero-y": position } as CSSProperties}>
+      <Image src={src} alt={alt} fill sizes="100vw" preload />
+    </div>
+  );
+}
+
 export function SectionHeading({ eyebrow, title, accent, copy, id }: { eyebrow: string; title: string; accent?: string; copy?: string; id?: string }) {
   return <div className="section-heading" data-reveal><p className="eyebrow">{eyebrow}</p><h2 id={id}>{title}{accent && <><br /><em>{accent}</em></>}</h2>{copy && <p className="section-intro">{copy}</p>}</div>;
 }
 
-export function DoctorCard({ doctor, compact = false }: { doctor: { name: string; initials: string; designation: string; specialty: string; bio: string }; compact?: boolean }) {
+/**
+ * The name links to the clinician's own profile page. On the full (non-compact)
+ * variant a second, explicit link is offered as well, because a name styled in
+ * the display serif does not read as a link on its own.
+ */
+export function DoctorCard({ doctor, compact = false }: { doctor: Doctor; compact?: boolean }) {
+  const profileHref = `/team/${doctor.slug}`;
   return (
     <article className={`doctor-card${compact ? " doctor-card-compact" : ""}`} data-reveal>
-      <div className="doctor-photo-placeholder" role="img" aria-label={`Professional photograph of ${doctor.name} to be provided`}><span aria-hidden="true">{doctor.initials}</span><small>Professional photo<br />to be provided</small></div>
-      <div className="doctor-card-copy"><p className="doctor-specialty">{doctor.specialty}</p><h3>{doctor.name}</h3><p className="doctor-designation">{doctor.designation}</p>{!compact && <p>{doctor.bio}</p>}</div>
+      <div className="doctor-photo-placeholder" aria-hidden="true"><span>{doctor.initials}</span></div>
+      <div className="doctor-card-copy">
+        <p className="doctor-specialty">{doctor.specialty}</p>
+        <h3><Link href={profileHref}>{doctor.name}</Link></h3>
+        <p className="doctor-designation">{doctor.designation}</p>
+        {!compact && <p className="doctor-bio">{doctor.bio}</p>}
+        {!compact && <Link className="text-link doctor-card-profile-link" href={profileHref}>View profile <span aria-hidden="true">→</span></Link>}
+      </div>
     </article>
   );
+}
+
+/**
+ * Placeholder while the Google Places call is in flight. It reserves close to
+ * the height of the real carousel (overview card + marquee + disclosure), so
+ * the section does not shove everything below it down when the reviews land.
+ */
+export function GoogleReviewsLoading() {
+  return <div className="reviews-status reviews-loading" role="status"><span className="review-status-mark" aria-hidden="true">“</span><div><h3>Loading reviews from Google Maps…</h3><p>Connecting to the clinic’s verified listing.</p></div></div>;
 }
 
 export function Footer() {
@@ -76,12 +126,10 @@ export function Footer() {
       <div className="footer-brand"><Brand /><p>Modern dental care for everyone.</p></div>
       <div className="footer-details">
         <div><h2>Visit</h2><p>1st Floor, Pehchan Mall<br />G-9 Markaz, Islamabad</p></div>
-        <div><h2>Contact</h2><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp: 0300 855 7144</a><a href="mailto:drhahsimandassociates@gmail.com">drhahsimandassociates@gmail.com</a></div>
-        <div><h2>Clinic hours</h2><p>10:00 to 8:30</p><BookingLink className="footer-book">Book an Appointment</BookingLink></div>
+        <div><h2>Contact</h2><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp: {CLINIC_PHONE_DISPLAY}</a><a href="mailto:drhahsimandassociates@gmail.com">drhahsimandassociates@gmail.com</a></div>
+        <div><h2>Clinic hours</h2><p>{CLINIC_HOURS}</p><BookingLink className="footer-book">Book an Appointment</BookingLink></div>
       </div>
       <div className="footer-bottom"><span>© {new Date().getFullYear()} Dr Hashim &amp; Associates Dental Clinic</span><span>G-9 Markaz, Islamabad</span></div>
     </footer>
   );
 }
-
-export { ServiceIcon } from "./service-icon";

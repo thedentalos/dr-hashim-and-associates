@@ -2,4 +2,8 @@ node_modules
 .next
 out
 .env*.local
+.env
 npm-debug.log*
+Clinic Shoot-20261005T160004Z-1-001
+services-page.docx
+tsconfig.tsbuildinfo
