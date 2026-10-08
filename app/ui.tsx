@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   type CSSProperties,
   type FocusEvent,
@@ -11,31 +12,42 @@ import {
   useRef,
   useState,
 } from "react";
-import { CLINIC_EMAIL, GOOGLE_MAPS_URL } from "./data";
+import { CLINIC_EMAIL, getDoctor, GOOGLE_MAPS_URL } from "./data";
 import type { GoogleReview, GoogleReviewsData } from "./google-reviews";
 
+/**
+ * The clinic photographs are portrait 3:4 and the desktop carousel frame is
+ * landscape, so each slide carries its own `object-position`: the vertical
+ * value picks the band that keeps the subject (the microscope head sits high
+ * in frame, the lounge seating low). Phones crop horizontally instead, where
+ * the horizontal value — keeping the right-hand two-thirds — does the work.
+ */
 const practiceSlides = [
   {
-    src: "/media/clinic1.webp",
-    alt: "Reception entrance at Dr Hashim and Associates Dental Clinic",
+    src: "/media/clinic-reception.webp",
+    alt: "Reception and waiting area at Dr Hashim & Associates Dental Clinic, G-9 Markaz, Islamabad",
+    position: "62% center",
     title: "Welcome to your clinic.",
     detail: "Reception · G-9 Markaz",
   },
   {
-    src: "/media/clinic2.webp",
-    alt: "Dental operating microscope and treatment chair at Dr Hashim and Associates",
+    src: "/media/clinic-microscope.webp",
+    alt: "Dentist and assistant working at the dental operating microscope at Dr Hashim & Associates",
+    position: "62% 32%",
     title: "Carefully equipped.",
     detail: "Clinical assessment",
   },
   {
-    src: "/media/clinic3.webp",
-    alt: "Prepared dental treatment room at Dr Hashim and Associates",
+    src: "/media/clinic-treatment-room.webp",
+    alt: "Treatment room prepared for a patient at Dr Hashim & Associates, G-9 Markaz",
+    position: "62% 42%",
     title: "Prepared for your visit.",
     detail: "Treatment room",
   },
   {
-    src: "/media/clinic4.webp",
-    alt: "Patient waiting lounge at Dr Hashim and Associates",
+    src: "/media/clinic-lounge.webp",
+    alt: "Patient waiting lounge with seating and plants at Dr Hashim & Associates",
+    position: "62% center",
     title: "A calmer place to arrive.",
     detail: "Patient lounge",
   },
@@ -149,7 +161,7 @@ function CarouselControls({
         <button type="button" onClick={onPrevious} aria-label={`Previous item in ${label}`}><span aria-hidden="true">←</span></button>
         <button type="button" onClick={onNext} aria-label={`Next item in ${label}`}><span aria-hidden="true">→</span></button>
       </div>
-      <div className="carousel-dots" aria-label={`Choose an item in ${label}`}>
+      <div className="carousel-dots" role="group" aria-label={`Choose an item in ${label}`}>
         {Array.from({ length: count }, (_, index) => (
           <button key={index} type="button" aria-label={`Show item ${index + 1} of ${count}`} aria-current={index === active ? "true" : undefined} onClick={() => onSelect(index)}><span /></button>
         ))}
@@ -171,7 +183,7 @@ export function PracticeCarousel() {
         <div className="carousel-track" style={trackStyle}>
           {practiceSlides.map((slide, index) => (
             <div className="practice-slide" role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${practiceSlides.length}`} aria-hidden={index !== carousel.active} inert={index !== carousel.active} key={slide.src}>
-              <Image src={slide.src} alt={slide.alt} fill preload={index === 0} sizes="(max-width: 767px) calc(100vw - 48px), 46vw" />
+              <Image src={slide.src} alt={slide.alt} fill preload={index === 0} sizes="(max-width: 767px) calc(100vw - 48px), 46vw" style={{ objectPosition: slide.position }} />
             </div>
           ))}
         </div>
@@ -253,7 +265,7 @@ export function GoogleReviewsCarousel({ reviewsData }: { reviewsData: GoogleRevi
       </div>
 
       <div className="review-marquee" role="region" aria-label="Google patient reviews">
-        {reviews.length > 1 && <button type="button" className="review-motion-toggle" aria-pressed={paused} onClick={() => setPaused((value) => !value)}>{paused ? "Play review motion" : "Pause review motion"}</button>}
+        {reviews.length > 1 && <button type="button" className="review-motion-toggle" onClick={() => setPaused((value) => !value)}>{paused ? "Play review motion" : "Pause review motion"}</button>}
         <div className="review-marquee-viewport" {...interactionProps}>
           <div className={`review-marquee-track${trackPaused ? " is-paused" : ""}${reviews.length < 2 ? " is-static" : ""}`} style={trackStyle}>
             {reviews.map((review, index) => <ReviewCard review={review} index={index} count={reviews.length} key={review.id} />)}
@@ -271,8 +283,19 @@ export function GoogleReviewsCarousel({ reviewsData }: { reviewsData: GoogleRevi
   );
 }
 
+const NAV_ITEMS = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About Us" },
+  { href: "/team", label: "Our Team" },
+  { href: "/services", label: "Services" },
+  { href: "/cases", label: "Our Cases" },
+  { href: "/reviews", label: "Patient Reviews" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
 export function MobileNavigation() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const close = () => setOpen(false);
 
   useEffect(() => {
@@ -285,59 +308,116 @@ export function MobileNavigation() {
 
   return (
     <div className="nav-wrap">
-      <nav id="navigation" className={open ? "open" : ""} aria-label="Main navigation">
-        <Link className="nav-link" onClick={close} href="/">Home</Link>
-        <Link className="nav-link" onClick={close} href="/about">About Us</Link>
-        <Link className="nav-link" onClick={close} href="/team">Our Team</Link>
-        <Link className="nav-link" onClick={close} href="/services">Services</Link>
-        <Link className="nav-link" onClick={close} href="/cases">Our Cases</Link>
-        <Link className="nav-link" onClick={close} href="/reviews">Patient Reviews</Link>
-        <Link className="nav-link" onClick={close} href="/contact">Contact</Link>
-      </nav>
+      {/* The toggle comes first in the DOM so that opening it and pressing Tab
+          moves into the menu. With the panel first, forward Tab skipped every
+          link and landed on the header's Book button instead. The panel is
+          absolutely positioned below this width and the toggle is hidden above
+          it, so neither order changes what is drawn. */}
       <button className="menu-toggle" aria-controls="navigation" aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen((value) => !value)}><span /><span /></button>
+      <nav id="navigation" className={open ? "open" : ""} aria-label="Main navigation">
+        {NAV_ITEMS.map((item) => (
+          <Link className="nav-link" onClick={close} href={item.href} aria-current={pathname === item.href ? "page" : undefined} key={item.href}>{item.label}</Link>
+        ))}
+      </nav>
     </div>
   );
 }
 
-export function CaseGallery({ items }: { items: ReadonlyArray<{ src: string; label: string; alt: string }> }) {
+export function CaseGallery({ items }: { items: ReadonlyArray<{ src: string; label: string; alt: string; doctor?: string }> }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  /** The card that opened the dialog, so focus can be handed back to it. */
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const isOpen = activeIndex !== null;
   const activePosition = activeIndex ?? 0;
   const activeItem = activeIndex === null ? null : items[activeIndex];
+  const activeDoctor = activeItem?.doctor ? getDoctor(activeItem.doctor) : undefined;
 
+  function open(index: number, trigger: HTMLElement) {
+    triggerRef.current = trigger;
+    setActiveIndex(index);
+  }
+
+  // Arrow keys. Keyed off `isOpen` rather than `activeIndex`, and using the
+  // functional form of setState, so stepping through images does not tear down
+  // and rebuild the listener on every press.
   useEffect(() => {
-    if (activeIndex === null) return;
+    if (!isOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActiveIndex(null);
       if (event.key === "ArrowRight") setActiveIndex((index) => index === null ? null : (index + 1) % items.length);
       if (event.key === "ArrowLeft") setActiveIndex((index) => index === null ? null : (index - 1 + items.length) % items.length);
     };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, items.length]);
+
+  /**
+   * Open/close side effects only — deliberately not re-run while the visitor
+   * steps between images. The dialog claims `aria-modal`, so Tab has to stay
+   * inside it, and focus has to go back to the card it came from on close;
+   * without that a keyboard user is dropped at the top of the document after
+   * dismissing each image.
+   */
+  useEffect(() => {
+    if (!isOpen) {
+      triggerRef.current?.focus();
+      return;
+    }
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
     closeButtonRef.current?.focus();
+
+    const panel = panelRef.current;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || !panel) return;
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])'),
+      ).filter((element) => !element.hasAttribute("disabled"));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [activeIndex, items.length]);
+  }, [isOpen]);
 
   return (
     <>
       <div className="case-grid case-directory-grid">
-        {items.map((item, index) => (
-          <button className="case-card case-gallery-button" type="button" onClick={() => setActiveIndex(index)} key={item.src} data-reveal>
-            <span className="case-image"><Image src={item.src} alt={item.alt} fill sizes="(max-width: 767px) 88vw, 33vw" /></span>
-            <span className="case-caption"><span>{item.label}</span><small>Before &amp; after · Enlarge</small></span>
-          </button>
-        ))}
+        {items.map((item, index) => {
+          const doctor = item.doctor ? getDoctor(item.doctor) : undefined;
+          return (
+            <article className="case-card" key={item.src} data-reveal>
+              <button className="case-gallery-button" type="button" onClick={(event) => open(index, event.currentTarget)}>
+                <span className="case-image"><Image src={item.src} alt={item.alt} fill sizes="(max-width: 767px) 88vw, (max-width: 1023px) 44vw, 28vw" /></span>
+                <span className="case-caption"><span>{item.label}</span><small>Before &amp; after · Enlarge</small></span>
+              </button>
+              {doctor && <p className="case-credit">Treated by <Link href={`/team/${doctor.slug}`}>{doctor.name}</Link></p>}
+            </article>
+          );
+        })}
       </div>
       {activeItem && (
         <div className="case-lightbox" role="dialog" aria-modal="true" aria-label={`${activeItem.label} case image`} onMouseDown={(event) => { if (event.target === event.currentTarget) setActiveIndex(null); }}>
-          <div className="case-lightbox-panel">
+          <div className="case-lightbox-panel" ref={panelRef}>
             <button ref={closeButtonRef} className="case-lightbox-close" type="button" onClick={() => setActiveIndex(null)} aria-label="Close enlarged image">Close <span aria-hidden="true">×</span></button>
-            <div className="case-lightbox-image"><Image src={activeItem.src} alt={activeItem.alt} fill sizes="92vw" priority /></div>
+            <div className="case-lightbox-image"><Image src={activeItem.src} alt={activeItem.alt} fill sizes="92vw" preload /></div>
             <div className="case-lightbox-caption"><strong>{activeItem.label}</strong><span>Before &amp; after</span></div>
+            {activeDoctor && <p className="case-lightbox-credit">Treated by <Link href={`/team/${activeDoctor.slug}`}>{activeDoctor.name}</Link></p>}
             {items.length > 1 && <div className="case-lightbox-controls"><button type="button" onClick={() => setActiveIndex((activePosition - 1 + items.length) % items.length)}>Previous</button><span>{activePosition + 1} / {items.length}</span><button type="button" onClick={() => setActiveIndex((activePosition + 1) % items.length)}>Next</button></div>}
           </div>
         </div>
@@ -369,23 +449,45 @@ export function ContactEnquiryForm() {
   );
 }
 
+declare global {
+  interface Window {
+    /** Armed by the pre-paint inline script; cleared here on mount so the
+     *  reveal styles are only ever switched off while this controller is live. */
+    __revealWatchdog?: ReturnType<typeof setTimeout>;
+  }
+}
+
 export function MotionController() {
   useEffect(() => {
+    // The controller is running, so the reveal styles are safe to keep on.
+    window.clearTimeout(window.__revealWatchdog);
+
     const header = document.querySelector(".site-header");
     const updateHeader = () => header?.classList.toggle("scrolled", window.scrollY > 40);
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const items = document.querySelectorAll<HTMLElement>("[data-reveal]");
     const parents = new Set(Array.from(items, (item) => item.parentElement).filter((parent): parent is HTMLElement => Boolean(parent)));
     parents.forEach((parent) => {
       const siblings = Array.from(parent.children).filter((child): child is HTMLElement => child instanceof HTMLElement && child.hasAttribute("data-reveal"));
       siblings.forEach((item, index) => item.style.setProperty("--reveal-delay", `${Math.min(index * 80, 400)}ms`));
     });
-    if (reducedMotion || !("IntersectionObserver" in window)) {
-      items.forEach((item) => item.classList.add("is-visible"));
-      return () => window.removeEventListener("scroll", updateHeader);
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealAll = () => items.forEach((item) => item.classList.add("is-visible"));
+
+    // Read live rather than once: a visitor who turns reduced motion on mid-visit
+    // should stop being shown reveal animations from that point on.
+    const onMotionPreferenceChange = () => { if (reducedMotion.matches) revealAll(); };
+    reducedMotion.addEventListener("change", onMotionPreferenceChange);
+
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
+      revealAll();
+      return () => {
+        window.removeEventListener("scroll", updateHeader);
+        reducedMotion.removeEventListener("change", onMotionPreferenceChange);
+      };
     }
 
     const observer = new IntersectionObserver((entries) => {
@@ -400,6 +502,7 @@ export function MotionController() {
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", updateHeader);
+      reducedMotion.removeEventListener("change", onMotionPreferenceChange);
     };
   }, []);
 

@@ -73,7 +73,11 @@ export async function getGoogleReviews(): Promise<GoogleReviewsData> {
 
   try {
     const response = await fetch(endpoint, {
-      cache: "no-store",
+      // Cached for an hour rather than `no-store`. The homepage and /reviews
+      // render this, and an uncached call on every request made both routes
+      // fully dynamic with their TTFB gated on Google's latency. Well inside
+      // the 30-day limit the Places terms put on caching place data.
+      next: { revalidate: 3600 },
       signal: AbortSignal.timeout(7000),
       headers: {
         "X-Goog-Api-Key": apiKey,

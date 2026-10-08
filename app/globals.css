@@ -1,13 +1,20 @@
 :root {
   --navy: #1B3A8C;
   --blue: #2E9ED6;
+  /* #2E9ED6 is only 3.0:1 on white and 2.7:1 on the tint, so it fails AA for
+     any normal-size text. It stays the brand accent for fills, borders and
+     large display type; text-sized uses take these two instead. */
+  --blue-ink: #1B6FA8;      /* 5.4:1 on white, 4.9:1 on --tint */
+  --blue-on-dark: #9BDCF7;  /* 6.9:1 on --navy */
   --white: #FFFFFF;
   --tint: #EBF5FC;
-  --ink-muted: rgba(27, 58, 140, .72);
+  --ink-muted: rgba(27, 58, 140, .78);
   --line: rgba(27, 58, 140, .16);
   --display: Georgia, "Times New Roman", serif;
   --sans: Arial, "Helvetica Neue", sans-serif;
-  --urdu: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Urdu Typesetting", serif;
+  /* The Nastaliq variable is only published on the two routes that render the
+     tagline, so the fallback inside var() keeps this stack valid everywhere. */
+  --urdu: var(--font-urdu, "Noto Nastaliq Urdu"), "Jameel Noori Nastaleeq", "Urdu Typesetting", serif;
   --ease-soft: cubic-bezier(.22, 1, .36, 1);
   --ease-inout: ease-in-out;
   --dur-micro: 180ms;
@@ -44,7 +51,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .brand-name { display: none; line-height: 1.1; }
 .brand-name > span { display: block; }
 .brand-name > span:first-child { font-family: var(--display); font-size: 17px; letter-spacing: .04em; text-transform: uppercase; }
-.brand-name > span:last-child { margin-top: 5px; color: var(--blue); font-size: 8px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+.brand-name > span:last-child { margin-top: 5px; color: var(--blue-ink); font-size: 8px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .nav-wrap { display: flex; align-items: center; margin-left: auto; }
 .site-header nav { position: absolute; top: 100%; right: 0; left: 0; display: flex; max-height: 0; flex-direction: column; overflow: hidden; padding: 0 5%; background: var(--white); box-shadow: 0 18px 32px rgba(27, 58, 140, .12); opacity: 0; pointer-events: none; visibility: hidden; transition: max-height 300ms ease, padding 300ms ease, opacity 220ms ease, visibility 0s linear 300ms; }
 .site-header nav.open { max-height: 520px; padding-top: 14px; padding-bottom: 24px; opacity: 1; pointer-events: auto; visibility: visible; transition-delay: 0s; }
@@ -59,32 +66,77 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .button, .secondary-button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; padding: 13px 22px; border-radius: 999px; font-size: 13px; font-weight: 700; text-align: center; transition: transform var(--dur-micro) var(--ease-soft), background-color var(--dur-micro) ease, border-color var(--dur-micro) ease, color var(--dur-micro) ease, box-shadow var(--dur-micro) ease; }
 .button { border: 1px solid var(--navy); background: var(--navy); color: var(--white); }
 .secondary-button { border: 1px solid rgba(27, 58, 140, .55); background: transparent; color: var(--navy); }
-.button:hover { border-color: var(--blue); background: var(--blue); }
-.secondary-button:hover { border-color: var(--blue); color: var(--blue); }
+.button:hover { border-color: var(--blue-ink); background: var(--blue-ink); }
+.secondary-button:hover { border-color: var(--blue-ink); color: var(--blue-ink); }
 .button:hover, .secondary-button:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 8px 22px rgba(27, 58, 140, .12); }
 .button:active, .secondary-button:active { transform: scale(.985); transition-duration: 100ms; }
 .text-link, .footer-book { display: inline-flex; align-items: center; gap: 10px; padding-bottom: 4px; border-bottom: 1px solid currentColor; font-size: 13px; font-weight: 700; }
-.text-link:hover, .footer-book:hover { color: var(--blue); }
+.text-link:hover, .footer-book:hover { color: var(--blue-ink); }
 
-.section { padding: 78px 6%; scroll-margin-top: 90px; }
+.section { padding: 56px 6%; scroll-margin-top: 90px; }
 .eyebrow, .card-label { margin-bottom: 18px; font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
 .section-heading { max-width: 760px; }
 .section-intro { max-width: 590px; color: var(--ink-muted); line-height: 1.8; }
 .large-copy { font-family: var(--display); font-size: clamp(22px, 5vw, 31px); line-height: 1.45; }
 .content-note { margin: 24px 0 0; color: var(--ink-muted); font-size: 12px; }
 
-.hero { position: relative; display: flex; flex-direction: column; gap: 34px; padding: 42px 6% 66px; }
+.hero { position: relative; display: flex; flex-direction: column; gap: 28px; padding: 32px 6% 48px; }
 .hero-copy { max-width: 700px; }
 .hero-eyebrow { display: flex; align-items: center; gap: 10px; }
 .small-line { width: 20px; height: 1px; flex: 0 0 auto; background: var(--navy); }
 .hero-description { margin-bottom: 14px; color: var(--ink-muted); font-size: 17px; line-height: 1.75; }
-.urdu-tagline { width: fit-content; margin: 0 0 29px; color: var(--blue); font-family: var(--urdu); font-size: 22px; line-height: 1.8; unicode-bidi: isolate; }
+/* Nastaliq has far taller ascenders and descenders than a Latin face, so it
+   needs a much looser line box than the 1.8 this used to carry. */
+.urdu-tagline { width: fit-content; margin: 0 0 24px; color: var(--blue-ink); font-family: var(--urdu); font-size: 21px; line-height: 2.1; unicode-bidi: isolate; }
+
+/* ── Hero headline typewriter ───────────────────────────────────────────────
+   The typed layer is painted over the real word, which stays in the document
+   and keeps the line at its final width. Nothing reflows, and the heading is
+   complete for crawlers, screen readers and no-JS visitors.                  */
+.typeword { position: relative; display: inline-block; }
+.typeword-reserve, .typeword-live { transition: opacity 240ms linear; }
+.typeword-live { position: absolute; top: 0; left: 0; white-space: nowrap; }
+/* While a word is being typed or deleted the live layer is the only one on
+   screen, so the reserve — which always holds the final word — must stay
+   hidden. `erasing` belongs in this list: without it the reserve fell back to
+   its default opacity and the final word sat fully visible behind every word
+   as it was deleted backwards. */
+.typeword[data-phase="typing"] .typeword-reserve,
+.typeword[data-phase="erasing"] .typeword-reserve { opacity: 0; }
+
+/* The live layer yields to the reserve only at the end. Both are holding the
+   final word during `fading`, so they cross over cleanly; emptying the live
+   layer at `settled` then changes nothing on screen. */
+.typeword[data-phase="intact"] .typeword-live,
+.typeword[data-phase="fading"] .typeword-live,
+.typeword[data-phase="settled"] .typeword-live { opacity: 0; }
+
+.typeword-caret {
+  display: inline-block;
+  width: .05em;
+  height: .72em;
+  margin-left: .06em;
+  background: currentColor;
+  vertical-align: -.03em;
+  animation: typewordBlink 620ms steps(2, jump-none) infinite;
+}
+
+/* ── Urdu tagline reveal ────────────────────────────────────────────────────
+   Nastaliq is a joined script: revealing it glyph by glyph would show each
+   letter in its isolated form and then re-join it, which reads as breakage.
+   The line sweeps in from the right instead, following the reading direction.
+
+   This used to wait for the headline: the delay was computed from the
+   typewriter's own timings and published as `--urdu-delay`, so the tagline
+   landed the moment the last word settled. That put it at 8.5s, which left the
+   hero holding an empty line for the whole of the typing sequence. It now
+   sweeps in just after the tagline's own fade-up (250ms + part of 500ms). */
+.urdu-reveal { display: inline-block; clip-path: inset(0 0 0 100%); animation: urduWipe 850ms var(--ease-soft) 480ms forwards; }
 .hero-actions { display: flex; flex-direction: column; gap: 10px; }
 .hero-actions > * { width: 100%; }
-.hero-address { display: grid; max-width: 580px; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; margin-top: 24px; padding-top: 19px; border-top: 1px solid var(--line); color: var(--ink-muted); font-size: 13px; line-height: 1.55; }
-.hero-address svg { width: 22px; margin-top: 2px; color: var(--blue); }
+.hero-address { display: block; max-width: 580px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-muted); font-size: 13px; line-height: 1.55; }
 .hero-address small { display: block; margin-bottom: 2px; color: var(--navy); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.hero-address:hover { color: var(--blue); }
+.hero-address:hover { color: var(--blue-ink); }
 .practice-carousel { position: relative; width: 100%; min-width: 0; aspect-ratio: 4 / 5; margin: 0; }
 .practice-carousel-viewport { position: absolute; inset: 0; overflow: hidden; border-radius: 0; background: var(--tint); }
 .carousel-track { display: flex; width: 100%; height: 100%; transform: translate3d(calc(var(--carousel-index) * -100%), 0, 0); transition: transform 520ms var(--ease); will-change: transform; }
@@ -101,11 +153,12 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .practice-carousel > .carousel-controls button { border-color: rgba(255, 255, 255, .65); background: rgba(255, 255, 255, .94); }
 .carousel-pause span { font-size: 10px; letter-spacing: -.12em; }
 .carousel-dots { display: flex; align-items: center; gap: 0; }
-.carousel-dots button { display: grid; width: 34px; height: 44px; place-items: center; border: 0; background: transparent; }
-.carousel-dots button span { display: block; width: 18px; height: 2px; background: var(--line); transition: width 180ms ease, background-color 180ms ease; }
+/* 44x44, not 34: these are real controls, and the dots sit edge to edge. */
+.carousel-dots button { display: grid; width: 44px; height: 44px; place-items: center; border: 0; background: transparent; }
+.carousel-dots button span { display: block; width: 18px; height: 2px; background: rgba(27, 58, 140, .6); transition: width 180ms ease, background-color 180ms ease; }
 .carousel-dots button[aria-current="true"] span { width: 27px; background: var(--blue); }
 .practice-carousel > .carousel-dots { position: absolute; top: 14px; right: 20px; z-index: 3; padding: 0 5px; border-radius: 999px; background: rgba(255, 255, 255, .92); }
-.values-band { display: flex; align-items: center; justify-content: center; gap: 14px; overflow: hidden; padding: 22px 6%; background: var(--tint); font-size: 11px; white-space: nowrap; }
+.values-band { display: flex; align-items: center; justify-content: center; gap: 14px; overflow: hidden; padding: 15px 6%; background: var(--tint); font-size: 11px; white-space: nowrap; }
 .values-band i { color: var(--blue); font-style: normal; }
 .values-band span:nth-of-type(n+3), .values-band i:nth-of-type(n+3) { display: none; }
 
@@ -114,8 +167,83 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .intro-copy .large-copy { color: var(--navy); }
 .intro-copy .text-link { margin-top: 12px; color: var(--navy); }
 
+/* ── Promotional banner ─────────────────────────────────────────────────────
+   Sits above the sticky header shell, so it scrolls away and the navigation
+   then pins as usual. The dismissed state is carried on <html> by the inline
+   script in the root layout, which runs before first paint.                 */
+.promo-banner {
+  position: relative;
+  display: flex;
+  min-height: 46px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 16px;
+  padding: 7px 52px;
+  background: var(--navy);
+  color: var(--white);
+  font-size: 12px;
+  text-align: center;
+}
+html[data-offer-dismissed="1"] .promo-banner { display: none; }
+
+/* The banner adds ~46px to the sticky bar, so anchors need a deeper offset or
+   the heading would land underneath it. Keyed off the banner actually being
+   present and undismissed, so other pages keep the standard offset. */
+html:has(.promo-banner):not([data-offer-dismissed="1"]) { scroll-padding-top: 142px; }
+html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin-top: 136px; }
+
+.promo-banner-text { margin: 0; }
+.promo-banner-long { display: none; }
+.promo-banner-cta { border-bottom: 1px solid currentColor; padding-bottom: 2px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.promo-banner-cta:hover { color: var(--blue-on-dark); }
+
+.promo-banner-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, .72);
+  font-size: 21px;
+  line-height: 1;
+}
+.promo-banner-close:hover, .promo-banner-close:focus-visible { color: var(--white); }
+
+@media (min-width: 600px) {
+  .promo-banner-long { display: inline; }
+  .promo-banner-short { display: none; }
+}
+
+/* ── Offer section ──────────────────────────────────────────────────────────
+   Takes the slot the mission block used, and opens with the mission line so
+   the page still leads with care rather than with a discount.               */
+.offer-lead .section-heading { margin-bottom: 26px; }
+.offer-lead .large-copy { margin-bottom: 16px; color: var(--navy); }
+.offer-lead > p:last-child { color: var(--ink-muted); }
+
+.offer-panel { margin-top: 30px; padding: 26px; background: var(--navy); color: var(--white); }
+.offer-label { margin-bottom: 14px; color: var(--blue-on-dark); font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.offer-headline { margin-bottom: 14px; font-family: var(--display); font-size: clamp(24px, 3.4vw, 31px); font-weight: 400; line-height: 1.14; letter-spacing: -.03em; }
+.offer-audience { margin-bottom: 22px; color: rgba(255, 255, 255, .82); font-size: 13px; line-height: 1.7; }
+.offer-actions { display: flex; flex-direction: column; gap: 10px; }
+.offer-actions > * { width: 100%; }
+
+@media (min-width: 600px) {
+  .offer-actions { flex-direction: row; }
+  .offer-actions > * { width: auto; flex: 1 1 0; }
+}
+.offer-panel .button { border-color: var(--white); background: var(--white); color: var(--navy); }
+.offer-panel .button:hover { border-color: var(--blue-ink); background: var(--blue-ink); color: var(--white); }
+.offer-panel .secondary-button { border-color: rgba(255, 255, 255, .5); color: var(--white); }
+.offer-panel .secondary-button:hover { border-color: var(--blue-ink); background: var(--blue-ink); color: var(--white); }
+.offer-terms { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .2); color: rgba(255, 255, 255, .64); font-size: 11px; line-height: 1.6; }
+
 .services { background: var(--tint); }
-.service-icon { width: 42px; height: 42px; }
 
 /* ── Smile journey ─────────────────────────────────────────────────────────
    The eight services grouped into the five stages of care. Mobile-first: the
@@ -245,10 +373,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .journey-procedure-label { grid-column: 1; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 
 .journey-procedure-title {
-  display: flex;
   grid-column: 1;
-  align-items: center;
-  gap: 10px;
   margin: 0;
   font-family: var(--display);
   font-size: 23px;
@@ -256,9 +381,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
   line-height: 1.15;
   letter-spacing: -.03em;
 }
-.journey-procedure-title .service-icon { width: 20px; height: 20px; flex: 0 0 auto; color: var(--blue); }
-.journey-procedure-title a { min-width: 0; }
-.journey-procedure:hover .journey-procedure-title a { color: var(--blue); }
+.journey-procedure:hover .journey-procedure-title a { color: var(--blue-ink); }
 
 /* Stretched link: the whole row is clickable, but the accessible name stays
    just the service name rather than the entire paragraph. */
@@ -278,10 +401,10 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 
 .journey-foot { margin-top: 26px; }
 
-.why-section { display: grid; gap: 28px; }
+.why-section { display: grid; gap: 22px; }
 .reason-grid { border-top: 1px solid var(--line); }
-.reason-grid article { display: grid; grid-template-columns: 38px 1fr; gap: 5px 14px; padding: 23px 0; border-bottom: 1px solid var(--line); }
-.reason-grid article > span { grid-row: 1 / 3; color: var(--blue); font-size: 10px; }
+.reason-grid article { display: grid; grid-template-columns: 38px 1fr; gap: 5px 14px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.reason-grid article > span { grid-row: 1 / 3; color: var(--blue-ink); font-size: 10px; }
 .reason-grid h3 { margin: 0; font-size: 17px; }
 .reason-grid p { margin: 0; color: var(--ink-muted); font-size: 14px; }
 
@@ -292,34 +415,52 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .split-heading .text-link { color: var(--white); }
 .doctor-grid { display: grid; gap: 18px; margin-top: 36px; }
 .doctor-card { overflow: hidden; border: 1px solid var(--line); background: var(--white); color: var(--navy); }
-.doctor-photo-placeholder { position: relative; display: grid; min-height: 310px; place-content: center; overflow: hidden; background: var(--tint); text-align: center; }
+.doctor-photo-placeholder { position: relative; display: grid; min-height: 240px; place-content: center; overflow: hidden; background: var(--tint); text-align: center; }
 .doctor-photo-placeholder::before, .doctor-photo-placeholder::after { position: absolute; border: 1px solid rgba(46, 158, 214, .35); border-radius: 50%; content: ""; }
 .doctor-photo-placeholder::before { width: 260px; height: 260px; top: -90px; right: -80px; }
 .doctor-photo-placeholder::after { width: 150px; height: 150px; bottom: -55px; left: -30px; }
 .doctor-photo-placeholder > span { position: relative; z-index: 1; font-family: var(--display); font-size: 58px; line-height: 1; }
-.doctor-photo-placeholder small { position: relative; z-index: 1; margin-top: 18px; color: var(--ink-muted); font-size: 9px; font-weight: 700; letter-spacing: .14em; line-height: 1.5; text-transform: uppercase; }
 .doctor-card-copy { padding: 25px; }
-.doctor-specialty { margin-bottom: 9px; color: var(--blue); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.doctor-specialty { margin-bottom: 9px; color: var(--blue-ink); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .doctor-card h3 { margin-bottom: 5px; font-family: var(--display); font-size: 27px; font-weight: 400; }
+/* The name is the link to the clinician's profile page; the underline is held
+   back until hover so a grid of cards does not read as a wall of links. */
+.doctor-card h3 a { border-bottom: 1px solid transparent; transition: color var(--dur-micro) ease, border-color var(--dur-micro) ease; }
+.doctor-card h3 a:hover { border-color: currentColor; color: var(--blue); }
+.doctor-card-profile-link { margin-top: 16px; color: var(--navy); }
 .doctor-designation { margin-bottom: 15px; color: var(--ink-muted); font-size: 12px; font-weight: 700; }
-.doctor-card-copy > p:last-child { margin-bottom: 0; color: var(--ink-muted); font-size: 14px; }
-.doctor-card-compact .doctor-photo-placeholder { min-height: 240px; }
+.doctor-card-copy > p:last-child, .doctor-bio { margin-bottom: 0; color: var(--ink-muted); font-size: 14px; }
+.doctor-card-compact .doctor-photo-placeholder { min-height: 190px; }
 
 .cases-preview { background: var(--white); }
 .case-grid { display: grid; gap: 16px; margin-top: 34px; }
 .case-card { margin: 0; border: 1px solid var(--line); background: var(--white); }
-.case-card > div { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: var(--tint); }
+/* The card is an <article> so the clinician credit can live beside the
+   interactive media. Nesting that link inside the card's own link or lightbox
+   button would be invalid HTML and would swallow the credit's click. */
+.case-card-open, .case-gallery-button { display: block; width: 100%; padding: 0; color: var(--navy); font: inherit; text-align: left; }
+/* Only the <button> needs UA chrome stripped. The <a> variant may also carry
+   .case-card on the same element, and resetting its border/fill here would
+   erase the card's own outline. */
+.case-gallery-button { border: 0; background: transparent; }
+.case-image { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--tint); }
 .case-card img { object-fit: cover; transition: transform 600ms var(--ease); }
 .case-card:hover img { transform: scale(1.025); }
-.case-card figcaption, .case-preview-caption { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 20px; font-size: 13px; }
-.case-card figcaption span, .case-preview-caption small { color: var(--ink-muted); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+.case-card figcaption, .case-preview-caption, .case-caption { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 20px; font-size: 13px; }
+.case-card figcaption span, .case-preview-caption small, .case-caption small { color: var(--ink-muted); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+.case-credit { margin: 0; padding: 0 20px 18px; color: var(--ink-muted); font-size: 11px; }
+.case-credit a { border-bottom: 1px solid rgba(27, 58, 140, .3); color: var(--navy); font-weight: 700; }
+.case-credit a:hover { border-color: var(--blue-ink); color: var(--blue-ink); }
 
 .reviews-section { background: var(--tint); }
-.reviews-status { display: grid; grid-template-columns: 44px 1fr; gap: 16px; max-width: 760px; padding: 30px; border: 1px solid var(--line); background: var(--white); }
+.reviews-status { display: grid; grid-template-columns: 44px 1fr; gap: 16px; max-width: 760px; padding: 24px; border: 1px solid var(--line); background: var(--white); }
 .review-status-mark { color: var(--blue); font-family: var(--display); font-size: 60px; line-height: .8; }
 .reviews-status h3 { margin-bottom: 12px; font-family: var(--display); font-size: 25px; font-weight: 400; }
 .reviews-status p { margin-bottom: 17px; color: var(--ink-muted); }
-.reviews-loading { min-height: 190px; align-items: center; }
+/* Matches the height of the loaded carousel (overview + marquee + disclosure)
+   so the reviews section does not push the rest of the page down when it
+   arrives — the old 190px reserved less than half of it. */
+.reviews-loading { min-height: 480px; align-items: center; }
 .reviews-section > .reviews-status, .google-reviews { margin-top: 40px; }
 .google-reviews { min-width: 0; }
 .google-reviews-overview { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 22px 24px; border: 1px solid var(--line); background: var(--white); }
@@ -330,12 +471,12 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .google-reviews-overview .text-link { margin-left: auto; }
 .review-marquee { position: relative; min-width: 0; margin-top: 18px; }
 .review-motion-toggle { display: block; min-height: 44px; margin: 0 0 8px auto; padding: 8px 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--navy); font-size: 11px; font-weight: 700; }
-.review-motion-toggle:hover { color: var(--blue); }
+.review-motion-toggle:hover { color: var(--blue-ink); }
 .review-marquee-viewport { min-width: 0; overflow: hidden; container-type: inline-size; }
 .review-marquee-track { display: flex; width: max-content; align-items: stretch; gap: 18px; padding: 10px 0 28px; animation: reviewFloat var(--review-duration, 30s) ease-in-out infinite alternate; will-change: transform; }
 .review-marquee-track.is-paused { animation-play-state: paused; }
 .review-marquee-track.is-static { animation: none; }
-.review-card { display: flex; width: clamp(290px, 31vw, 390px); min-height: 350px; flex: 0 0 auto; flex-direction: column; padding: 26px; border: 1px solid var(--line); background: var(--white); box-shadow: 0 12px 28px rgba(27, 58, 140, .08); }
+.review-card { display: flex; width: clamp(290px, 31vw, 390px); min-height: 290px; flex: 0 0 auto; flex-direction: column; padding: 22px; border: 1px solid var(--line); background: var(--white); box-shadow: 0 12px 28px rgba(27, 58, 140, .08); }
 .review-card:nth-child(even) { transform: translateY(12px); }
 .review-author { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .review-author img, .review-avatar { width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; }
@@ -343,31 +484,31 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .review-avatar { display: grid; place-items: center; background: var(--navy); color: var(--white); font-size: 11px; font-weight: 700; letter-spacing: .06em; }
 .review-author > div { display: flex; min-width: 0; flex-direction: column; }
 .review-author a, .review-author strong { overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.review-author a:hover { color: var(--blue); }
+.review-author a:hover { color: var(--blue-ink); }
 .review-author > div > span, .review-author time { color: var(--ink-muted); font-size: 11px; }
-.review-stars { display: inline-flex; width: fit-content; color: var(--blue); font-size: 16px; letter-spacing: .1em; line-height: 1; }
+.review-stars { display: inline-flex; width: fit-content; color: var(--blue-ink); font-size: 16px; letter-spacing: .1em; line-height: 1; }
 .review-copy { display: -webkit-box; margin: 18px 0 20px; overflow: hidden; color: var(--navy); font-family: var(--display); font-size: 20px; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 6; }
 .translation-note { margin-top: -12px; margin-bottom: 14px; color: var(--ink-muted); font-size: 10px; }
 .review-card-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 18px; margin-top: auto; padding-top: 17px; border-top: 1px solid var(--line); }
 .review-card-links a { color: var(--ink-muted); font-size: 11px; font-weight: 700; }
-.review-card-links a:hover { color: var(--blue); }
+.review-card-links a:hover { color: var(--blue-ink); }
 .review-disclosure { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 20px; color: var(--ink-muted); font-size: 10px; line-height: 1.6; }
 .review-disclosure p { width: 100%; margin: 0; }
 .review-disclosure a { text-decoration: underline; text-underline-offset: 3px; }
 
-.booking-cta { display: grid; gap: 28px; background: var(--navy); color: var(--white); }
+.booking-cta { display: grid; gap: 24px; background: var(--navy); color: var(--white); }
 .booking-cta em { color: var(--blue); }
 .booking-cta > div:last-child { max-width: 520px; color: rgba(255, 255, 255, .78); }
 .booking-cta .button { border-color: var(--white); background: var(--white); color: var(--navy); }
-.booking-cta .button:hover { border-color: var(--blue); background: var(--blue); color: var(--white); }
+.booking-cta .button:hover { border-color: var(--blue-ink); background: var(--blue-ink); color: var(--white); }
 
-.inner-hero { display: grid; gap: 34px; padding: 54px 6% 72px; }
+.inner-hero { display: grid; gap: 28px; padding: 40px 6% 54px; }
 .inner-hero > div:first-child { align-self: center; max-width: 760px; }
 .inner-hero > div:first-child > p:last-child { max-width: 600px; color: var(--ink-muted); font-size: 17px; }
-.inner-hero-image { position: relative; min-height: 430px; overflow: hidden; border-radius: 2px 2px 100px 2px; background: var(--tint); }
+.inner-hero-image { position: relative; min-height: 360px; overflow: hidden; border-radius: 2px 2px 100px 2px; background: var(--tint); }
 .inner-hero-image img { object-fit: cover; object-position: 62% center; }
 
-.mission-section { display: grid; gap: 28px; background: var(--tint); }
+.mission-section { display: grid; gap: 22px; background: var(--tint); }
 .mission-copy { max-width: 680px; color: var(--ink-muted); }
 .mission-copy .large-copy { color: var(--navy); }
 .about-urdu { margin-top: 25px; margin-bottom: 0; }
@@ -376,14 +517,14 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .space-photo { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--tint); }
 .space-photo img { object-fit: cover; transition: transform 600ms var(--ease); }
 .space-card:hover img { transform: scale(1.025); }
-.space-card > div:last-child { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; padding: 22px; }
-.space-card span { grid-row: 1 / 3; color: var(--blue); font-size: 10px; }
+.space-card > div:last-child { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; padding: 18px; }
+.space-card span { grid-row: 1 / 3; color: var(--blue-ink); font-size: 10px; }
 .space-card h3 { margin-bottom: 7px; font-family: var(--display); font-size: 24px; font-weight: 400; }
 .space-card p { margin: 0; color: var(--ink-muted); font-size: 14px; }
 .equipment-section { background: var(--navy); color: var(--white); }
 .equipment-grid { display: grid; gap: 1px; margin-top: 34px; background: rgba(255, 255, 255, .18); }
-.equipment-grid article { padding: 28px; background: var(--navy); }
-.equipment-grid span { color: var(--blue); font-size: 10px; }
+.equipment-grid article { padding: 24px; background: var(--navy); }
+.equipment-grid span { color: var(--blue-on-dark); font-size: 10px; }
 .equipment-grid h3 { margin: 22px 0 10px; font-family: var(--display); font-size: 26px; font-weight: 400; }
 .equipment-grid p { margin: 0; color: rgba(255, 255, 255, .76); font-size: 14px; }
 .equipment-section .content-note { color: rgba(255, 255, 255, .68); }
@@ -392,43 +533,181 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .location-details > p, .location-details > address { display: grid; gap: 3px; margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); font-style: normal; }
 .location-details strong { color: var(--navy); font-size: 12px; }
 .location-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.map-frame { min-height: 450px; overflow: hidden; border: 1px solid var(--line); background: var(--tint); }
-.map-frame iframe { display: block; width: 100%; height: 100%; min-height: 450px; border: 0; }
+.map-frame { min-height: 360px; overflow: hidden; border: 1px solid var(--line); background: var(--tint); }
+.map-frame iframe { display: block; width: 100%; height: 100%; min-height: 360px; border: 0; }
 
-.team-hero { min-height: 540px; align-content: center; background: var(--tint); }
+.team-hero { min-height: 430px; align-content: center; background: var(--tint); }
 .team-hero-note { display: grid; align-self: end; max-width: 420px; grid-template-columns: auto 1fr; gap: 20px; padding-top: 22px; border-top: 1px solid var(--line); }
-.team-hero-note > span { color: var(--blue); font-family: var(--display); font-size: 48px; line-height: 1; }
+.team-hero-note > span { color: var(--blue-ink); font-family: var(--display); font-size: 48px; line-height: 1; }
 .team-hero-note p { margin: 0; color: var(--ink-muted); font-size: 13px; }
 .doctor-grid-full .doctor-card { display: grid; }
-.team-principles { display: grid; gap: 28px; background: var(--tint); }
+.team-principles { display: grid; gap: 22px; background: var(--tint); }
 .principle-list { border-top: 1px solid var(--line); }
 .principle-list article { display: grid; grid-template-columns: 40px 1fr; gap: 15px; padding: 24px 0; border-bottom: 1px solid var(--line); }
-.principle-list article > span { color: var(--blue); font-size: 10px; }
+.principle-list article > span { color: var(--blue-ink); font-size: 10px; }
 .principle-list h3 { margin-bottom: 8px; }
 .principle-list p { margin: 0; color: var(--ink-muted); font-size: 14px; }
 
-.route-hero { padding: 76px 6% 82px; }
-.route-hero-tint { background: var(--tint); }
+/* ── Clinician profile pages (/team/[slug]) ────────────────────────────────
+   Each clinician gets an indexable page so their clinical examples have
+   somewhere to point and the practice's expertise is attributable. */
+.breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 20px 6% 0; color: var(--ink-muted); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.breadcrumb a { border-bottom: 1px solid transparent; }
+.breadcrumb a:hover { border-color: currentColor; color: var(--blue-ink); }
+
+.doctor-profile-copy { max-width: 660px; }
+/* The clinician's initials stand in for a headshot until approved photography
+   exists — as a monogram, not as an apology for a missing image. */
+.doctor-hero-monogram { display: grid; min-height: 240px; place-items: center; border: 1px solid var(--line); background: var(--white); color: var(--blue); font-family: var(--display); font-size: 92px; line-height: 1; }
+.doctor-profile-copy h2 { margin-bottom: 16px; font-size: clamp(28px, 6vw, 38px); }
+.doctor-profile-copy .large-copy { margin-bottom: 18px; color: var(--navy); }
+.doctor-profile-copy > p:last-of-type { color: var(--ink-muted); }
+.doctor-profile-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+.doctor-cases { background: var(--tint); }
+.doctor-colleagues { background: var(--white); }
+.colleague-list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
+.colleague-list li { border-bottom: 1px solid var(--line); }
+.colleague-list a { display: grid; gap: 3px 26px; padding: 20px 0; }
+.colleague-list a:hover .colleague-name { color: var(--blue); }
+.colleague-name { font-family: var(--display); font-size: 25px; letter-spacing: -.03em; }
+.colleague-role { color: var(--ink-muted); font-size: 13px; }
+
+.route-hero { padding: 54px 6% 60px; }
 .route-hero h1 { max-width: 980px; }
 .route-hero > p:last-child { max-width: 670px; margin-bottom: 0; color: var(--ink-muted); font-size: 17px; line-height: 1.8; }
 
-.service-directory-list { display: grid; gap: 14px; margin-top: 42px; }
-.service-detail-card { display: grid; gap: 24px; padding: 28px; border: 1px solid var(--line); scroll-margin-top: 116px; transition: transform 220ms var(--ease-soft), box-shadow 220ms ease; }
-.service-detail-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(27, 58, 140, .08); }
-.service-detail-number { display: flex; align-items: flex-start; justify-content: space-between; color: var(--blue); }
-.service-detail-number span { font-size: 10px; letter-spacing: .1em; }
-.service-detail-card .card-label { margin-bottom: 8px; color: var(--blue); font-size: 9px; }
-.service-detail-card h2 { margin-bottom: 14px; font-size: clamp(29px, 6vw, 42px); }
-.service-detail-card p:last-child { margin: 0; color: var(--ink-muted); }
+/* ── Photographic route heroes ──────────────────────────────────────────────
+   Services, cases, contact, reviews and booking open on a full-bleed clinic
+   photograph instead of a plain band. The footage is portrait, so the wide
+   desktop frame cannot show all of it: `--hero-y` (set per page by
+   HeroBackdrop) chooses which horizontal slice survives, because a centred
+   crop cuts heads off the chair-side and microscope frames.
+
+   The scrim is a navy gradient, opaque enough that the white heading keeps
+   its contrast no matter which frame sits underneath.                      */
+.route-hero-photo { position: relative; display: flex; min-height: 380px; flex-direction: column; justify-content: center; isolation: isolate; overflow: hidden; }
+.route-hero-media { position: absolute; inset: 0; z-index: -1; background: var(--navy); }
+.route-hero-media img { object-fit: cover; object-position: 50% var(--hero-y, 50%); }
+.route-hero-media::after { position: absolute; inset: 0; background: linear-gradient(96deg, rgba(11, 25, 66, .95), rgba(19, 42, 101, .87) 46%, rgba(27, 58, 140, .70)); content: ""; }
+.route-hero-photo > .eyebrow, .route-hero-photo > p:last-child { color: rgba(255, 255, 255, .88); }
+.route-hero-photo > h1 { color: var(--white); }
+/* The accent blue is only 3.3:1 on the scrim; this tint clears 6:1. */
+.route-hero-photo > h1 em { color: var(--blue-on-dark); }
+
+/* ── Service rail ───────────────────────────────────────────────────────────
+   The eight services threaded down a single rail, grouped into the five stages
+   of care. Each stage carries a numbered marker on the line, and each service
+   is a row that expands in place to reveal the detail the clinic supplies.
+
+   Expansion uses native <details>, so the page needs no JavaScript at all and
+   the detail text is present in the HTML for search engines even while closed.
+   Stages without any detail yet render as plain rows rather than empty
+   disclosures.                                                                */
+.treatment-rail { position: relative; margin-top: 34px; padding-left: 44px; }
+.treatment-rail::before {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 15px;
+  width: 2px;
+  background: linear-gradient(var(--navy), var(--blue));
+  content: "";
+}
+
+.rail-stage { position: relative; margin-bottom: 36px; }
+.rail-stage:last-child { margin-bottom: 0; }
+
+.rail-stage-name { display: flex; align-items: center; margin-bottom: 8px; font-size: clamp(26px, 5vw, 34px); }
+.rail-stage-dot {
+  position: absolute;
+  left: -44px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--navy);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--sans);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+}
+.rail-stage-sub { margin-bottom: 16px; color: var(--ink-muted); font-size: 14px; line-height: 1.7; }
+
+.rail-services { border-top: 1px solid var(--line); }
+
+.rail-service {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 110px;
+}
+
+.rail-service-head { display: grid; gap: 4px; grid-column: 1; }
+.rail-service-label { color: var(--navy); font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.rail-service-title { margin: 0; font-family: var(--display); font-size: 22px; font-weight: 400; line-height: 1.2; letter-spacing: -.02em; }
+.rail-service-copy { color: var(--ink-muted); font-size: 13.5px; line-height: 1.7; }
+
+.rail-service-book {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  /* leaves room for the disclosure chevron, which sits at the row's right edge */
+  margin: 4px 26px 0 0;
+  color: var(--navy);
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rail-service-book:hover { color: var(--blue-ink); }
+
+/* Native disclosure — no JavaScript, and the closed content stays in the DOM. */
+.rail-service-details > summary { cursor: pointer; list-style: none; padding-right: 26px; }
+.rail-service-details > summary::-webkit-details-marker { display: none; }
+.rail-service-chevron {
+  position: absolute;
+  top: 24px;
+  right: 2px;
+  width: 11px;
+  height: 11px;
+  border-right: 1.5px solid var(--blue);
+  border-bottom: 1.5px solid var(--blue);
+  transform: rotate(45deg);
+  transition: transform var(--dur-standard) var(--ease-soft);
+}
+.rail-service-details[open] .rail-service-chevron { transform: rotate(225deg); }
+.rail-service-details[open] .rail-service-head { margin-bottom: 12px; }
+
+.rail-service-body { padding-bottom: 8px; max-width: 62ch; }
+.rail-service-body > p { margin-bottom: 14px; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
+.rail-service-body h4 { margin: 20px 0 10px; color: var(--navy); font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+.rail-faqs { display: grid; gap: 16px; margin: 0; }
+.rail-faqs dt { margin-bottom: 5px; font-family: var(--display); font-size: 18px; }
+.rail-faqs dd { margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
+
+.rail-facts { display: grid; gap: 12px; margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.rail-facts dt { margin-bottom: 3px; color: var(--ink-muted); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.rail-facts dd { margin: 0; font-family: var(--display); font-size: 17px; }
+
+@media (min-width: 900px) {
+  .treatment-rail { padding-left: 56px; }
+  .treatment-rail::before { left: 19px; }
+  .rail-stage-dot { left: -56px; width: 40px; height: 40px; font-size: 11.5px; }
+  .rail-stage { margin-bottom: 44px; }
+  .rail-service { padding: 18px 0; gap: 0 32px; }
+  .rail-service-title { font-size: 25px; }
+  .rail-service-copy { font-size: 14px; }
+  .rail-service-chevron { top: 26px; }
+}
 
 .case-directory { background: var(--tint); }
 .case-directory-grid { margin-top: 42px; }
-.case-gallery-button { width: 100%; padding: 0; color: var(--navy); font: inherit; text-align: left; }
-.case-image { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--white); }
-.case-image img { object-fit: cover; transition: transform 600ms var(--ease); }
-.case-gallery-button:hover .case-image img { transform: scale(1.025); }
-.case-caption { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 17px 20px; background: var(--white); font-size: 13px; }
-.case-caption small { color: var(--ink-muted); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
 .case-lightbox { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; background: rgba(8, 22, 61, .88); animation: lightboxFade var(--dur-standard) var(--ease-inout) both; }
 .case-lightbox-panel { width: min(920px, 100%); padding: 16px; background: var(--white); box-shadow: 0 28px 70px rgba(0, 0, 0, .28); animation: lightboxPanel var(--dur-standard) var(--ease-soft) both; }
 .case-lightbox-close { display: flex; min-height: 44px; align-items: center; gap: 10px; margin: 0 0 10px auto; border: 0; background: transparent; color: var(--navy); font-size: 12px; font-weight: 700; }
@@ -437,30 +716,29 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .case-lightbox-image img { object-fit: contain; }
 .case-lightbox-caption { display: flex; justify-content: space-between; gap: 20px; padding: 14px 4px 8px; font-size: 12px; }
 .case-lightbox-caption span { color: var(--ink-muted); }
+.case-lightbox-credit { margin: 0; padding: 0 4px 10px; color: var(--ink-muted); font-size: 12px; }
+.case-lightbox-credit a { border-bottom: 1px solid rgba(27, 58, 140, .3); color: var(--navy); font-weight: 700; }
+.case-lightbox-credit a:hover { border-color: var(--blue-ink); color: var(--blue-ink); }
 .case-lightbox-controls { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); }
 .case-lightbox-controls button { min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: var(--navy); font-size: 12px; font-weight: 700; }
-.case-lightbox-controls button:hover { color: var(--blue); }
+.case-lightbox-controls button:hover { color: var(--blue-ink); }
 .case-lightbox-controls > span { color: var(--ink-muted); font-size: 11px; }
-
-.testimonial-section { background: var(--navy); color: var(--white); }
-.testimonial-section .section-intro { color: rgba(255, 255, 255, .74); }
-.media-placeholder { display: grid; min-height: 300px; place-content: center; gap: 18px; margin-top: 40px; border: 1px solid rgba(255, 255, 255, .28); text-align: center; }
-.media-placeholder > span { display: grid; width: 58px; height: 58px; place-items: center; justify-self: center; border: 1px solid rgba(255, 255, 255, .6); border-radius: 50%; color: var(--blue); }
-.media-placeholder p { margin: 0; color: rgba(255, 255, 255, .74); font-size: 13px; }
 
 .booking-form-section { background: var(--white); }
 .booking-embed { height: min(1180px, 150vh); min-height: 760px; margin-top: 42px; overflow: hidden; border: 1px solid var(--line); background: var(--tint); }
 .booking-embed iframe { display: block; width: 100%; height: 100%; border: 0; }
-.booking-fallback { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-top: 22px; padding: 22px; border-left: 3px solid var(--blue); background: var(--tint); }
-.booking-fallback p { margin: 0; color: var(--ink-muted); font-size: 13px; }
+.booking-fallback { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 22px; }
 
 .contact-details-section { background: var(--tint); }
-.contact-detail-grid { display: grid; gap: 1px; margin-top: 42px; background: var(--line); border: 1px solid var(--line); }
-.contact-detail-grid > * { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 10px; margin: 0; padding: 26px; background: var(--white); font-style: normal; }
-.contact-detail-grid > * > span { color: var(--blue); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.contact-detail-grid strong { overflow-wrap: anywhere; font-family: var(--display); font-size: 20px; font-weight: 400; line-height: 1.4; }
-.contact-detail-grid a { margin-top: auto; color: var(--ink-muted); font-size: 12px; font-weight: 700; }
-.contact-detail-grid a:hover { color: var(--blue); }
+/* Clinic details, as a hairline index rather than a grid of boxes. Boxes broke
+   the email address mid-word in a quarter-width column; rows give every value
+   the full measure and read the same way as the rest of the site. */
+.contact-detail-grid { margin-top: 28px; border-top: 1px solid var(--line); }
+.contact-detail-grid > * { display: grid; gap: 7px; margin: 0; padding: 18px 0; border-bottom: 1px solid var(--line); font-style: normal; }
+.contact-detail-grid > * > span { color: var(--navy); font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.contact-detail-grid strong { font-family: var(--display); font-size: 20px; font-weight: 400; line-height: 1.35; overflow-wrap: anywhere; }
+.contact-detail-grid a { width: fit-content; color: var(--ink-muted); font-size: 12px; font-weight: 700; }
+.contact-detail-grid a:hover { color: var(--blue-ink); }
 .contact-enquiry-section { display: grid; gap: 34px; }
 .contact-form { display: grid; gap: 20px; padding: 26px; border: 1px solid var(--line); }
 .form-field { display: flex; flex-direction: column; gap: 7px; }
@@ -468,7 +746,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .form-field label span { color: var(--ink-muted); font-weight: 400; }
 .form-field input, .form-field textarea { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 0; background: var(--white); color: var(--navy); font: inherit; transition: border-color 200ms ease-out, box-shadow 200ms ease-out; }
 .form-field textarea { min-height: 150px; resize: vertical; }
-.form-field input:focus, .form-field textarea:focus { border-color: var(--blue); outline: 3px solid rgba(46, 158, 214, .18); outline-offset: 1px; }
+/* A solid ring, matching the site-wide focus style. The previous 18%-alpha
+   halo was ~1.2:1 against white, which left the border colour as the only cue. */
+.form-field input:focus, .form-field textarea:focus { border-color: var(--blue); outline: 3px solid var(--blue); outline-offset: 2px; }
 .form-submit { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .form-submit p { max-width: 440px; margin: 0; color: var(--ink-muted); font-size: 11px; }
 .contact-map-section { display: grid; gap: 34px; background: var(--white); }
@@ -479,16 +759,16 @@ button:focus-visible, a:focus-visible, summary:focus-visible, iframe:focus-visib
 .whatsapp-button:hover { background: #168447; box-shadow: 0 14px 34px rgba(12, 55, 42, .3); transform: translateY(-3px) scale(1.015); }
 .whatsapp-button:active { transform: scale(.97); transition-duration: 100ms; }
 
-footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
-.footer-brand { display: flex; flex-direction: column; align-items: center; padding-bottom: 42px; text-align: center; }
+footer { padding: 48px 6% 20px; background: var(--navy); color: var(--white); }
+.footer-brand { display: flex; flex-direction: column; align-items: center; padding-bottom: 32px; text-align: center; }
 .footer-brand .brand-name { display: block; text-align: left; }
 .footer-brand .brand-name > span:first-child { color: var(--white); }
 .footer-brand > p { margin: 18px 0 0; color: rgba(255, 255, 255, .72); font-family: var(--display); font-size: 20px; }
-.footer-details { display: grid; gap: 28px; padding: 38px 0; border-top: 1px solid rgba(255, 255, 255, .20); }
+.footer-details { display: grid; gap: 24px; padding: 30px 0; border-top: 1px solid rgba(255, 255, 255, .20); }
 .footer-details > div { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .footer-details h2 { margin: 0 0 6px; font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .footer-details p, .footer-details a { margin: 0; color: rgba(255, 255, 255, .76); font-size: 13px; }
-.footer-details a:hover { color: var(--blue); }
+.footer-details a:hover { color: var(--blue-on-dark); }
 .footer-book { margin-top: 5px; color: var(--white) !important; }
 .footer-bottom { display: flex; flex-direction: column; gap: 7px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .20); color: rgba(255, 255, 255, .62); font-size: 10px; }
 .hero-eyebrow, .hero-h1, .hero-subhead, .urdu-tagline, .hero-ctas, .hero-address { opacity: 0; transform: translateY(12px); animation: fadeUp var(--dur-reveal) var(--ease-soft) forwards; }
@@ -500,17 +780,32 @@ footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
 .route-hero > .eyebrow, .route-hero > h1, .route-hero > p:last-child { opacity: 0; transform: translateY(12px); animation: fadeUp var(--dur-reveal) var(--ease-soft) forwards; }
 .route-hero > h1 { animation-delay: 100ms; }
 .route-hero > p:last-child { animation-delay: 200ms; }
-[data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: var(--reveal-delay, 0ms); }
-[data-reveal].is-visible { opacity: 1; transform: none; }
-.reason-grid article[data-reveal], .equipment-grid article[data-reveal], .principle-list article[data-reveal], .service-detail-card[data-reveal] { opacity: 1; transform: none; transition: none; }
-.reason-grid article[data-reveal] > span, .equipment-grid article[data-reveal] > span, .principle-list article[data-reveal] > span, .service-detail-card[data-reveal] > .service-detail-number { opacity: 0; transform: translateY(10px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: var(--reveal-delay, 0ms); }
-.reason-grid article[data-reveal] > :not(span), .equipment-grid article[data-reveal] > :not(span), .principle-list article[data-reveal] > div, .service-detail-card[data-reveal] > div:last-child { opacity: 0; transform: translateY(10px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: calc(var(--reveal-delay, 0ms) + 80ms); }
-.reason-grid article[data-reveal].is-visible > *, .equipment-grid article[data-reveal].is-visible > *, .principle-list article[data-reveal].is-visible > *, .service-detail-card[data-reveal].is-visible > * { opacity: 1; transform: none; }
-.service-detail-card[data-reveal]:hover { transform: translateY(-3px); }
+/* ── Scroll reveal ──────────────────────────────────────────────────────────
+   Every rule that HIDES something is gated on `html[data-enhanced="1"]`, which
+   the pre-paint inline script in the root layout sets. Reveal targets are
+   therefore visible by default and only become animated when JavaScript is
+   actually running: without the gate, a visitor with scripting disabled (or a
+   bundle that fails to execute) saw whole pages of invisible content, since
+   `.is-visible` is only ever added by MotionController.
+
+   The gate is repeated on the `.is-visible` rules on purpose — scoping only the
+   hidden rule would raise its specificity above the unscoped reveal rule and
+   leave every element stuck at opacity 0 forever. */
+html[data-enhanced="1"] [data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: var(--reveal-delay, 0ms); }
+html[data-enhanced="1"] [data-reveal].is-visible { opacity: 1; transform: none; }
+.reason-grid article[data-reveal], .equipment-grid article[data-reveal], .principle-list article[data-reveal] { opacity: 1; transform: none; transition: none; }
+html[data-enhanced="1"] .reason-grid article[data-reveal] > span, html[data-enhanced="1"] .equipment-grid article[data-reveal] > span, html[data-enhanced="1"] .principle-list article[data-reveal] > span { opacity: 0; transform: translateY(10px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: var(--reveal-delay, 0ms); }
+html[data-enhanced="1"] .reason-grid article[data-reveal] > :not(span), html[data-enhanced="1"] .equipment-grid article[data-reveal] > :not(span), html[data-enhanced="1"] .principle-list article[data-reveal] > div { opacity: 0; transform: translateY(10px); transition: opacity var(--dur-reveal) var(--ease-soft), transform var(--dur-reveal) var(--ease-soft); transition-delay: calc(var(--reveal-delay, 0ms) + 80ms); }
+/* Children fade in after their parent row. The third selector previously read
+   `> *.is-visible > *`, which asked for a *grandchild* carrying `.is-visible`
+   — a class MotionController only ever puts on the article itself. Nothing
+   matched, so every .principle-list row kept its children at opacity 0 and the
+   team page showed three empty rules with no copy between them. */
+html[data-enhanced="1"] .reason-grid article[data-reveal].is-visible > *, html[data-enhanced="1"] .equipment-grid article[data-reveal].is-visible > *, html[data-enhanced="1"] .principle-list article[data-reveal].is-visible > * { opacity: 1; transform: none; }
 .doctor-card, .space-card, .case-card { transition: transform 220ms var(--ease-soft), box-shadow 220ms ease; }
 .doctor-card:hover, .space-card:hover, .case-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(27, 58, 140, .10); }
-.service-icon, .service-detail-number { transition: transform 220ms var(--ease-soft); }
-.service-detail-card:hover .service-detail-number { transform: scale(1.05); }
+@keyframes typewordBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes urduWipe { to { clip-path: inset(0 0 0 0); } }
 @keyframes journeyReveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes fadeUp { to { opacity: 1; transform: none; } }
 @keyframes heroZoom { from { transform: scale(1); } to { transform: scale(1.03); } }
@@ -535,28 +830,29 @@ footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
   .footer-details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .footer-bottom { flex-direction: row; justify-content: space-between; }
   .location-actions { flex-direction: row; flex-wrap: wrap; }
-  .contact-detail-grid, .contact-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .form-field-full, .form-submit { grid-column: 1 / -1; }
 }
 
 @media (min-width: 768px) {
   .site-header { height: 96px; padding-right: 4%; padding-left: 4%; }
-  .hero { display: grid; min-height: 660px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 5%; padding: 42px 4% 58px 6%; }
-  .hero-copy { align-self: center; padding: 24px 0; }
+  /* Full-bleed gallery: no top, right or bottom padding on the hero, so the
+     carousel runs from the navigation down to the next band and off the right
+     edge. The copy column carries its own vertical rhythm instead. */
+  .hero { display: grid; min-height: 560px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 5%; padding: 0 0 0 6%; }
+  .hero-copy { align-self: center; padding: 40px 0; }
+  .practice-carousel { align-self: stretch; height: 100%; aspect-ratio: auto; }
   .values-band span, .values-band i { display: inline !important; }
-  .section { padding: 96px 7%; }
-  /* The journey is the tallest block on the page, so this one section trades the
-     global rhythm for a tighter frame — the arc and its detail want to be read
-     together rather than scrolled between. */
-  .services { padding-top: 76px; padding-bottom: 82px; }
+  .section { padding: 70px 7%; }
   .intro-section, .why-section, .mission-section, .team-principles, .booking-cta { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 8%; }
   .intro-copy, .reason-grid, .reviews-status, .mission-copy, .principle-list, .booking-cta > div:last-child { align-self: center; }
   .split-heading { grid-template-columns: minmax(0, 1fr) minmax(280px, .55fr); align-items: end; gap: 8%; }
+  .colleague-list a { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: baseline; }
   .doctor-grid-preview { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .doctor-grid-preview .doctor-card h3 { font-size: 22px; }
   .doctor-grid-preview .doctor-card-copy { padding: 20px; }
-  .inner-hero { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 6%; padding: 40px 5% 72px 7%; }
-  .inner-hero-image { min-height: 560px; }
+  .inner-hero { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 6%; padding: 32px 5% 54px 7%; }
+  .inner-hero-image { min-height: 440px; }
   .equipment-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .location-section { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 7%; }
   .location-copy { align-self: center; }
@@ -564,7 +860,9 @@ footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
   .team-hero-note { align-self: center; }
   .doctor-grid-full .doctor-card { grid-template-columns: minmax(230px, .8fr) minmax(0, 1.2fr); }
   .doctor-grid-full .doctor-card-copy { align-self: center; padding: 34px; }
-  .route-hero { padding: 104px 7% 110px; }
+  .route-hero { padding: 74px 7% 78px; }
+  /* A taller band keeps the portrait sources from becoming a letterbox slit. */
+  .route-hero-photo { min-height: 560px; }
 
   /* The rail stands up into the arch. The curve is a quadratic Bézier drawn in
      a 1000 x 260 box stretched to fit; each dot is offset to the exact point
@@ -610,32 +908,30 @@ footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
   }
   .journey-panel:not([hidden]) { display: grid; }
   .journey-panel h3 { font-size: 28px; }
-  .service-detail-card { grid-template-columns: 72px 1fr; gap: 30px; padding: 34px; }
-  .service-detail-number { flex-direction: column; justify-content: flex-start; gap: 22px; }
   .contact-enquiry-section { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 7%; }
   .contact-map-section { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 7%; }
   .contact-map-section .location-copy { align-self: center; }
-  .footer-brand { padding-bottom: 48px; }
+  .footer-brand { padding-bottom: 36px; }
+  .offer-section { align-items: start; }
+  .offer-section .offer-lead { align-self: start; }
+  .offer-panel { margin-top: 0; padding: 34px; }
 }
 
 @media (min-width: 1024px) {
   h1 { font-size: clamp(66px, 5.7vw, 88px); }
-  .section { padding-top: 112px; padding-bottom: 112px; }
-  .services { padding-top: 74px; padding-bottom: 80px; }
+  .section { padding-top: 84px; padding-bottom: 84px; }
   .journey-panel:not([hidden]) { grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); align-items: start; gap: 52px; }
   .journey-panel h3 { font-size: 34px; }
   .journey-panel-head .journey-copy { max-width: 40ch; }
   .journey-procedures { margin: 0; }
   .journey-procedure { padding: 13px 0; gap: 3px 26px; }
   .journey-procedure-title { font-size: 25px; }
-  .journey-procedure-title .service-icon { width: 21px; height: 21px; }
   .journey-procedure-copy { font-size: 14px; }
   .journey-procedure-arrow { font-size: 19px; }
   .case-grid, .space-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
   .doctor-grid-full { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .doctor-grid-full .doctor-card { grid-template-columns: 1fr; }
-  .service-directory-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .contact-detail-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .contact-detail-grid > * { grid-template-columns: 168px minmax(0, 1fr) auto; align-items: center; gap: 4px 30px; padding: 20px 0; }
 }
 
 @media (min-width: 1180px) {
@@ -671,7 +967,9 @@ footer { padding: 62px 6% 24px; background: var(--navy); color: var(--white); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .hero-eyebrow, .hero-h1, .hero-subhead, .urdu-tagline, .hero-ctas, .hero-address, [data-reveal] { opacity: 1 !important; transform: none !important; }
-  .route-hero > .eyebrow, .route-hero > h1, .route-hero > p:last-child, .case-lightbox, .case-lightbox-panel, .whatsapp-button, .reason-grid article[data-reveal] > *, .equipment-grid article[data-reveal] > *, .principle-list article[data-reveal] > *, .service-detail-card[data-reveal] > * { opacity: 1 !important; transform: none !important; }
+  /* The wipe's delay would otherwise leave the tagline clipped and invisible. */
+  .urdu-reveal { clip-path: none !important; animation: none !important; }
+  .route-hero > .eyebrow, .route-hero > h1, .route-hero > p:last-child, .case-lightbox, .case-lightbox-panel, .whatsapp-button, .reason-grid article[data-reveal] > *, .equipment-grid article[data-reveal] > *, .principle-list article[data-reveal] > * { opacity: 1 !important; transform: none !important; }
   .carousel-pause { display: none !important; }
   .review-motion-toggle { display: none; }
   .review-marquee-viewport { overflow-x: auto; }

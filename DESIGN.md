@@ -83,14 +83,19 @@ Suggested fonts:
 ## 5. Layout Principles
 
 The website should use:
-- Clean, spacious sections
+- Clean, compact sections
 - Strong visual hierarchy
 - Consistent alignment
-- Generous white space
-- Consistent card components
+- Purposeful white space — enough to separate and to breathe, never enough to sprawl
+- Consistent components
 - Clear section separation
 - Sticky/fixed navigation
 - Mobile-first layouts
+
+Whitespace is a tool for hierarchy, not a quantity to maximise. Section padding
+is generous relative to the text it surrounds, but a visitor should be able to
+reach the next section without a long scroll through empty space. Avoid large
+empty areas, oversized section spacing and unnecessarily tall cards.
 
 The interface should feel polished without being flashy.
 
@@ -158,9 +163,11 @@ Sections:
 2. **Introduction**
    - Short description of the clinic's mission and values
 
-3. **Services Overview**
-   - Icon-based grid
+3. **Services Overview — the smile journey**
+   - Five stages of care: Prevent · Diagnose · Treat · Restore · Refine
+   - Selecting a stage reveals the services within it
    - Each service links to the Services page or relevant detail
+   - No decorative icons; see §9.4
 
 4. **Why Choose Us**
    - Experienced team
@@ -232,13 +239,18 @@ Doctors:
 
 ### 9.4 Services
 
-Use a consistent card design.
+Present services as an editorial list, not as a grid of cards. Cards, framed
+icons and "learn more" pills read as generic template styling and are not used.
 
-Each card should contain:
-- Icon
-- Service name
-- Patient-friendly description
+Each service entry should contain:
+- Service name, set in the display serif at the largest size in the row
+- A short patient-friendly description
 - Optional expand/detail interaction
+
+**Icons:** do not add decorative icons. The only icons in the interface are
+functional ones — the WhatsApp contact mark, the smile-journey arch, and the
+accordion toggle. Service entries are separated by hairline rules, not borders,
+fills or shadows.
 
 Services:
 
