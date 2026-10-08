@@ -109,24 +109,28 @@ Confirm the build log lists these routes. Note that `/` and `/reviews` are **sta
 
 ## 4. Domain and DNS
 
-1. Project → **Settings → Domains** → add `drhashimandassociates.com`.
-2. Vercel shows the records to create. For the apex on external DNS:
-
-   | Type | Name | Value |
-   |---|---|---|
-   | A | `@` | `76.76.21.21` |
-   | CNAME | `www` | `cname.vercel-dns.com` |
-
-   Alternatively, point the domain's nameservers at Vercel (`ns1.vercel-dns.com`, `ns2.vercel-dns.com`) and it manages both records for you.
-
-3. Add `www.drhashimandassociates.com` as well, then set **`drhashimandassociates.com` as the primary**. Vercel issues the certificate for both and 308-redirects `www` to the apex.
+1. Project → **Settings → Domains** → **Add Domain** → `drhashimandassociates.com`. Vercel will offer to add the `www` prefix at the same time; accept it.
+2. Add `www.drhashimandassociates.com` as well, then set **`drhashimandassociates.com` as the primary**. Vercel issues the certificate for both and redirects the other to it.
 
    > Do not skip the redirect. Serving both hostnames without one splits your search signals across two URLs.
 
-4. Wait for the certificate to show **Valid** before continuing.
+3. **Copy the DNS values from the Domains panel — do not copy them from this document or from another project.**
+
+   | Type | Name | Value |
+   |---|---|---|
+   | A | `@` | the IP shown for *this* project (Vercel has used both `76.76.21.21` and `216.198.79.1`) |
+   | CNAME | `www` | the project-specific target shown, of the form `<hash>.vercel-dns-0xx.com` |
+
+   The `www` target is **unique per project** — the older generic `cname.vercel-dns.com` is no longer what the dashboard hands out for new projects. Using a stale value is the usual cause of an "Invalid Configuration" warning.
+
+   Alternatively, point the domain's nameservers at Vercel (`ns1.vercel-dns.com`, `ns2.vercel-dns.com`) and it manages both records for you. If you do that, **copy any existing MX and TXT records across first**, or clinic email will stop.
+
+4. **If Vercel says the domain is in use by another account**, it offers a **TXT verification** instead of blocking you. That lets you use the domain without moving it, and does not require the other account's cooperation. Prefer this over chasing the old project.
+
+5. Wait for the certificate to show **Valid** before continuing.
 
 ```bash
-dig +short drhashimandassociates.com     # should return Vercel's IP
+dig +short drhashimandassociates.com                     # should return the IP from step 3
 curl -sI https://drhashimandassociates.com | head -1     # expect HTTP/2 200
 curl -sI https://www.drhashimandassociates.com | head -1 # expect 308
 ```
