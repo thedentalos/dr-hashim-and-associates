@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       throw new Error(
         "SITE_URL is not set. Canonical URLs, sitemap.xml and the robots.txt sitemap " +
         "line are all derived from it and generated at build time. Set SITE_URL to the " +
-        "public origin (for example https://www.drhashim.pk) in the build environment, " +
+        "public origin (for example https://drhashimandassociates.com) in the build environment, " +
         "then build again.",
       );
     }
