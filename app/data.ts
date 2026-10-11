@@ -156,6 +156,14 @@ export const doctors = [
     specialty: "Orthodontics",
     bio: "Provides braces, aligner therapy, and bite correction for children, teens, and adults.",
   },
+  {
+    slug: "dr-shehryar-baigal",
+    name: "Dr. Shehryar Baigal",
+    initials: "SB",
+    designation: "Associate Dentist",
+    specialty: "General Dentistry",
+    bio: "Committed to providing thoughtful, patient-centred dental care, Dr. Shehryar Baigal believes every patient deserves to feel heard, understood, and confident in their treatment.",
+  },
 ] as const;
 
 export type Doctor = (typeof doctors)[number];
