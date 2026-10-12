@@ -33,9 +33,9 @@ export const metadata: Metadata = {
  * profile (`worksFor`) all resolve to this one business rather than to a dozen
  * unrelated anonymous `Dentist` objects.
  *
- * The clinic publishes its hours as a single daily range with no day breakdown,
- * so `dayOfWeek` is deliberately omitted rather than asserting seven-day
- * opening. Add it once the practice confirms which days it is closed.
+ * The hours are one range repeated across `CLINIC_DAYS`, which is what the
+ * clinic actually keeps: the same 10:00–20:30 every appointment day. Sunday is
+ * absent from that list on purpose — see the note on the specification itself.
  */
 const clinicStructuredData = {
   "@context": "https://schema.org",
@@ -68,6 +68,48 @@ const clinicStructuredData = {
     name: "Islamabad",
   },
   hasMap: GOOGLE_MAPS_URL,
+  /**
+   * A photograph of the clinic, which is what Google's guidance for a local
+   * business asks for and what this node was missing. It points at a real
+   * photograph rather than the generated share card: the card is a
+   * text-and-logo layout, not a picture of the business.
+   *
+   * There is no `logo`. The mark is imported as a module and served from a
+   * fingerprinted asset path that changes between builds, and Google already
+   * reads the icon files in `app/` for the same purpose.
+   */
+  image: siteUrl ? `${siteUrl}/media/clinic-reception-wide.webp` : undefined,
+  /**
+   * A reference, not a copy. The catalogue is defined once on `/services`
+   * under `${siteUrl}/services#catalog`, and its eight entries each name the
+   * treatment page that defines the matching `MedicalProcedure`. Restating
+   * those eight here would publish the same treatments a second time under the
+   * same entity and leave a crawler to reconcile the two. Naming the `@id`
+   * links this node to that catalogue instead.
+   */
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    "@id": siteUrl ? `${siteUrl}/services#catalog` : undefined,
+  },
+  /**
+   * The booking form, expressed so a crawler can reach it without inferring it
+   * from the navigation. Google surfaces `ReserveAction` for only some
+   * categories, so this is a small gain rather than a large one — but it is
+   * accurate, and stating it costs nothing.
+   */
+  potentialAction: {
+    "@type": "ReserveAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: siteUrl ? `${siteUrl}/book-appointment` : "/book-appointment",
+      inLanguage: "en-PK",
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+    result: { "@type": "Reservation", name: "Dental appointment" },
+  },
   /**
    * Official profiles for the same business. This is what tells Google the
    * website, the Google Business Profile and the Instagram account are one
