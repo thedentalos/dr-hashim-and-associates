@@ -532,6 +532,10 @@ html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin
 .location-details { color: var(--ink-muted); }
 .location-details > p, .location-details > address { display: grid; gap: 3px; margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); font-style: normal; }
 .location-details strong { color: var(--navy); font-size: 12px; }
+/* Sits under the opening hours wherever they appear — homepage, contact page,
+   footer. Deliberately sets no colour: it inherits, so it reads as secondary
+   on white and on the navy footer alike, where a fixed colour would break. */
+.hours-note { display: block; margin: 4px 0 0; font-size: 11px; font-weight: 400; opacity: .85; }
 .location-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
 .map-frame { min-height: 360px; overflow: hidden; border: 1px solid var(--line); background: var(--tint); }
 .map-frame iframe { display: block; width: 100%; height: 100%; min-height: 360px; border: 0; }

@@ -12,11 +12,25 @@ export const CLINIC_PHONE_E164 = "+923008557144";
 
 export const CLINIC_EMAIL = "drhahsimandassociates@gmail.com";
 
-export const CLINIC_HOURS = "10:00 AM to 8:30 PM";
+export const CLINIC_HOURS = "Monday to Saturday, 10:00 AM to 8:30 PM";
+
+/** For tight spaces — the footer column and the Open Graph card. */
+export const CLINIC_HOURS_SHORT = "Mon–Sat, 10:00 AM – 8:30 PM";
+
+/**
+ * The clinic does not take routine appointments on Sundays. Stated separately
+ * rather than baked into `CLINIC_HOURS` so the machine-readable hours stay
+ * accurate: Sunday is not an opening day, and marking it as one would put
+ * "open now" in front of someone who cannot actually be seen.
+ */
+export const CLINIC_HOURS_NOTE = "Sundays: emergency care only";
 
 /** The same hours, in the 24-hour form schema.org expects. */
 export const CLINIC_OPENS = "10:00";
 export const CLINIC_CLOSES = "20:30";
+
+/** Days the clinic takes appointments. Sunday is deliberately absent. */
+export const CLINIC_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
 
 export const GOOGLE_MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Dr%20Hashim%20and%20Associates%20Dental%20Clinic&query_place_id=ChIJ8zBMenhKz2cRBnRXb0-JHtI";

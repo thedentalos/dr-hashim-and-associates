@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { CLINIC_ADDRESS, CLINIC_HOURS } from "./data";
+import { CLINIC_ADDRESS, CLINIC_HOURS_SHORT } from "./data";
 
 /**
  * Share card for every route. Without one, a link to the clinic posted to
@@ -68,7 +68,7 @@ export default function Image() {
           }}
         >
           <div>{CLINIC_ADDRESS}</div>
-          <div style={{ color: "#9BDCF7" }}>{CLINIC_HOURS}</div>
+          <div style={{ color: "#9BDCF7" }}>{CLINIC_HOURS_SHORT}</div>
         </div>
       </div>
     ),
