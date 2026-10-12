@@ -21,6 +21,9 @@ export const CLINIC_CLOSES = "20:30";
 export const GOOGLE_MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Dr%20Hashim%20and%20Associates%20Dental%20Clinic&query_place_id=ChIJ8zBMenhKz2cRBnRXb0-JHtI";
 
+/** Also the Instagram profile listed on the clinic's Google Business Profile. */
+export const INSTAGRAM_URL = "https://www.instagram.com/drhashimandasssociates_";
+
 /**
  * `key` is the internal join key — `careStages` groups by it, `serviceDetails`
  * is keyed by it, and it is the anchor id each row carries on `/services`.

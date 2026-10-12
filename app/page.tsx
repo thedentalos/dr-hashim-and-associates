@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BookingLink, DoctorCard, GoogleReviewsLoading, PageFrame, SectionHeading } from "./components";
-import { cases, CLINIC_ADDRESS, CLINIC_CLOSES, CLINIC_HOURS, CLINIC_OPENS, CLINIC_PHONE_E164, doctors, getDoctor, GOOGLE_MAPS_URL, offer, WHATSAPP_URL } from "./data";
+import { cases, CLINIC_ADDRESS, CLINIC_CLOSES, CLINIC_HOURS, CLINIC_OPENS, CLINIC_PHONE_E164, doctors, getDoctor, GOOGLE_MAPS_URL, INSTAGRAM_URL, offer, WHATSAPP_URL } from "./data";
 import { getGoogleReviews } from "./google-reviews";
 import { SmileJourney } from "./smile-journey";
 import { TypewriterWord } from "./typewriter-word";
@@ -56,6 +56,7 @@ const clinicStructuredData = {
     streetAddress: "1st Floor, Pehchan Mall, G-9 Markaz",
     addressLocality: "Islamabad",
     addressRegion: "Islamabad Capital Territory",
+    postalCode: "44090",
     addressCountry: "PK",
   },
   areaServed: {
@@ -63,6 +64,13 @@ const clinicStructuredData = {
     name: "Islamabad",
   },
   hasMap: GOOGLE_MAPS_URL,
+  /**
+   * Official profiles for the same business. This is what tells Google the
+   * website, the Google Business Profile and the Instagram account are one
+   * entity rather than three unrelated ones — worth having now the Business
+   * Profile is live and verified.
+   */
+  sameAs: [GOOGLE_MAPS_URL, INSTAGRAM_URL],
 };
 
 async function GoogleReviewsContent() {
