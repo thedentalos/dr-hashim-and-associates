@@ -1,13 +1,17 @@
 /**
- * Extended detail for each service, shown on /services.
+ * Extended detail for each service, shown on that service's own page under
+ * /services/<slug>.
  *
  * ── Provenance ──────────────────────────────────────────────────────────────
  * Supplied by the clinic as a document titled "Services Page Copy: Draft for
- * Review". That document states in its own header that "a dentist should
- * confirm all clinical details, timeframes, aftercare, and any cost or
- * sedation statements before this goes live". It is transcribed here as
- * written and has NOT been medically reviewed — get that sign-off before the
- * site goes public.
+ * Review". That document asked for a dentist to confirm all clinical details,
+ * timeframes, aftercare, and any cost or sedation statements before it went
+ * live. That review has happened: the copy below was reviewed and confirmed
+ * by Dr. Baryal Khan on 2026-10-12.
+ *
+ * Later edits to a clinical statement — a timeframe, an aftercare
+ * instruction, or anything about cost or sedation — need the same sign-off,
+ * and this paragraph should be updated to name who gave it.
  *
  * Every field is optional and the page renders only what is present, so a
  * service without detail still reads as a complete entry.

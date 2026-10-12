@@ -29,8 +29,9 @@ export const metadata: Metadata = {
 
 /**
  * The clinic entity, given a stable `@id` so the nodes on /services (the
- * treatment catalogue) and each clinician profile (`worksFor`) resolve to this
- * one business rather than to three unrelated anonymous `Dentist` objects.
+ * treatment catalogue), each treatment page (`provider`) and each clinician
+ * profile (`worksFor`) all resolve to this one business rather than to a dozen
+ * unrelated anonymous `Dentist` objects.
  *
  * The clinic publishes its hours as a single daily range with no day breakdown,
  * so `dayOfWeek` is deliberately omitted rather than asserting seven-day

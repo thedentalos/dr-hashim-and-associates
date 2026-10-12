@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookingLink, PageFrame, SectionHeading } from "../../components";
+import { BookingLink, Breadcrumbs, PageFrame, SectionHeading } from "../../components";
 import { CLINIC_ADDRESS, CLINIC_PHONE_E164, doctors, getCasesForDoctor, getDoctor, GOOGLE_MAPS_URL } from "../../data";
 
 const siteUrl = process.env.SITE_URL?.trim().replace(/\/$/, "");
 
 /**
- * Only the four clinicians in `data.ts` have profiles. `dynamicParams = false`
- * means anything else 404s at the router rather than rendering a page whose
- * only content is a `notFound()`.
+ * Only the clinicians listed in `data.ts` have profiles. `dynamicParams =
+ * false` means anything else 404s at the router rather than rendering a page
+ * whose only content is a `notFound()`.
  */
 export const dynamicParams = false;
 
@@ -86,11 +86,7 @@ export default async function DoctorProfilePage({ params }: { params: Promise<{ 
       <main id="main" tabIndex={-1}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personStructuredData).replace(/</g, "\\u003c") }} />
 
-        <nav className="breadcrumb" aria-label="Breadcrumb">
-          <Link href="/team">Our Team</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">{doctor.name}</span>
-        </nav>
+        <Breadcrumbs items={[{ name: "Our Team", href: "/team" }, { name: doctor.name }]} />
 
         <section className="inner-hero team-hero doctor-hero" aria-labelledby="doctor-page-title">
           <div><p className="eyebrow">{doctor.designation}</p><h1 id="doctor-page-title">{doctor.name}</h1><p>{doctor.specialty} at Dr Hashim &amp; Associates Dental Clinic, G-9 Markaz, Islamabad.</p></div>

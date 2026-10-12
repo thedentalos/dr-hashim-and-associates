@@ -7,7 +7,8 @@ import { careStages, services } from "./data";
 /**
  * Every service stays in the server-rendered HTML. Inactive stage panels are
  * marked `hidden` rather than unmounted, so all eight service names, their
- * descriptions and their /services#key links are crawlable without JavaScript.
+ * descriptions and their /services/<slug> links are crawlable without
+ * JavaScript.
  */
 
 /** Quadratic Bézier, control point pulled down to make the arch. */
@@ -104,7 +105,7 @@ export function SmileJourney() {
                 <li className="journey-procedure" key={key}>
                   <span className="journey-procedure-label">{service.label}</span>
                   <h4 className="journey-procedure-title">
-                    <Link href={`/services#${key}`}>{service.title}</Link>
+                    <Link href={`/services/${service.slug}`}>{service.title}</Link>
                   </h4>
                   <span className="journey-procedure-arrow" aria-hidden="true">&rarr;</span>
                   <p className="journey-procedure-copy">{service.copy}</p>

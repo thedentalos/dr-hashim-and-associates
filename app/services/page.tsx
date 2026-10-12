@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroBackdrop, PageFrame, SectionHeading } from "../components";
-import { careStages, CLINIC_PHONE_E164, serviceDetails, services, type ServiceDetail } from "../data";
+import { careStages, CLINIC_PHONE_E164, services } from "../data";
 
 export const metadata: Metadata = {
   title: "Dental Services in G-9 Markaz, Islamabad",
@@ -11,13 +11,15 @@ export const metadata: Metadata = {
 
 const serviceByKey = new Map(services.map((service) => [service.key, service]));
 
-/** Every patient question the clinic supplied, across all treatments. */
-const allFaqs = Object.values(serviceDetails).flatMap((detail) => detail.faqs ?? []);
-
 /**
- * Two graphs: the clinic and its treatment catalogue, plus a FAQPage built from
- * the questions on this page. The first paragraph of each overview is used as
- * the procedure description where it exists, falling back to the short summary.
+ * The clinic, and its treatment catalogue hanging off it. Every catalogue
+ * entry names the treatment's own page, which is where the matching
+ * `MedicalProcedure` is defined — so a crawler reads one procedure with one
+ * page, rather than two descriptions of the same thing.
+ *
+ * The `FAQPage` that used to sit here has moved to those pages. Each service's
+ * questions belong on the page about that treatment; leaving a pooled copy
+ * here as well would publish the same answers twice, and the two would compete.
  */
 const siteUrl = process.env.SITE_URL?.trim().replace(/\/$/, "");
 
@@ -33,86 +35,26 @@ const servicesStructuredData = [
     telephone: CLINIC_PHONE_E164,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
+      "@id": siteUrl ? `${siteUrl}/services#catalog` : undefined,
       name: "Dental Services",
       itemListElement: services.map((service) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "MedicalProcedure",
+          "@id": siteUrl ? `${siteUrl}/services/${service.slug}` : undefined,
           name: service.title,
-          description: serviceDetails[service.key]?.overview?.[0] ?? service.copy,
+          description: service.copy,
         },
       })),
     },
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: allFaqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
-  },
 ];
 
-function hasDetail(detail: ServiceDetail) {
-  return Boolean(
-    detail.overview?.length || detail.recommendedWhen?.length || detail.whatToExpect?.length ||
-    detail.aftercare?.length || detail.faqs?.length,
-  );
-}
-
-/** The expandable half of a service row. Renders nothing until the clinic fills it in. */
-function ServiceDetailBody({ detail }: { detail: ServiceDetail }) {
-  return (
-    <>
-      {detail.overview?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-
-      {detail.recommendedWhen?.length ? (
-        <>
-          <h4>When it’s recommended</h4>
-          {detail.recommendedWhen.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </>
-      ) : null}
-
-      {detail.whatToExpect?.length ? (
-        <>
-          <h4>What to expect</h4>
-          {detail.whatToExpect.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </>
-      ) : null}
-
-      {detail.aftercare?.length ? (
-        <>
-          <h4>Aftercare</h4>
-          {detail.aftercare.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </>
-      ) : null}
-
-      {detail.faqs && detail.faqs.length > 0 && (
-        <>
-          <h4>Common questions</h4>
-          <dl className="rail-faqs">
-            {detail.faqs.map((faq) => (
-              <div key={faq.question}>
-                <dt>{faq.question}</dt>
-                <dd>{faq.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </>
-      )}
-
-      {(detail.typicalVisits || detail.performedBy) && (
-        <dl className="rail-facts">
-          {detail.typicalVisits && <div><dt>Typical visits</dt><dd>{detail.typicalVisits}</dd></div>}
-          {detail.performedBy && <div><dt>Performed by</dt><dd>{detail.performedBy}</dd></div>}
-        </dl>
-      )}
-    </>
-  );
-}
-
+/**
+ * The hub is a directory: it names each treatment and links to the page that
+ * covers it. The detail itself lives on those pages and nowhere else, so the
+ * hub and a spoke never publish the same paragraph.
+ */
 export default function ServicesPage() {
   return (
     <PageFrame>
@@ -141,32 +83,22 @@ export default function ServicesPage() {
                   {stage.services.map((key) => {
                     const service = serviceByKey.get(key);
                     if (!service) return null;
-                    const detail = serviceDetails[key] ?? {};
-                    const expandable = hasDetail(detail);
-
-                    const head = (
-                      <>
-                        <span className="rail-service-label">{service.label}</span>
-                        <h3 className="rail-service-title">{service.title}</h3>
-                        <span className="rail-service-copy">{service.copy}</span>
-                      </>
-                    );
 
                     return (
+                      /* `id={key}` is the row's own anchor, and the homepage
+                         smile journey and any older external link still use it
+                         (`/services#endodontics`). It deliberately survives the
+                         move to per-treatment pages so those links keep landing
+                         on the right row. `scroll-margin-top` in the stylesheet
+                         keeps the sticky header off it. */
                       <article className="rail-service" id={key} key={key}>
-                        {expandable ? (
-                          <details className="rail-service-details">
-                            <summary className="rail-service-head">
-                              {head}
-                              <span className="rail-service-chevron" aria-hidden="true" />
-                            </summary>
-                            <div className="rail-service-body">
-                              <ServiceDetailBody detail={detail} />
-                            </div>
-                          </details>
-                        ) : (
-                          <div className="rail-service-head rail-service-static">{head}</div>
-                        )}
+                        <div className="rail-service-head">
+                          <span className="rail-service-label">{service.label}</span>
+                          <h3 className="rail-service-title">
+                            <Link href={`/services/${service.slug}`}>{service.title}</Link>
+                          </h3>
+                          <span className="rail-service-copy">{service.copy}</span>
+                        </div>
                         <Link className="rail-service-book" href="/book-appointment">
                           Book <span aria-hidden="true">&rarr;</span>
                         </Link>

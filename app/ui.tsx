@@ -315,9 +315,13 @@ export function MobileNavigation() {
           it, so neither order changes what is drawn. */}
       <button className="menu-toggle" aria-controls="navigation" aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen((value) => !value)}><span /><span /></button>
       <nav id="navigation" className={open ? "open" : ""} aria-label="Main navigation">
-        {NAV_ITEMS.map((item) => (
-          <Link className="nav-link" onClick={close} href={item.href} aria-current={pathname === item.href ? "page" : undefined} key={item.href}>{item.label}</Link>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          /* Exact match for Home; prefix match for a section that has pages
+             beneath it. Without the prefix arm, "Services" goes unhighlighted
+             on /services/<slug> — as "Our Team" already did on /team/<slug>. */
+          const current = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return <Link className="nav-link" onClick={close} href={item.href} aria-current={current ? "page" : undefined} key={item.href}>{item.label}</Link>;
+        })}
       </nav>
     </div>
   );

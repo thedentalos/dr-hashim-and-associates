@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 import type { CSSProperties, ReactNode } from "react";
 // A 512px derivative of logo.png (2000px, 1.4MB). The mark renders into a
 // 132px box that the header clips to a 48px circle, so 512 covers 2x with room
 // to spare — the visible crop is pixel-equivalent to the original. logo.png is
 // left untouched as the source of truth.
 import clinicLogo from "../logo-mark.webp";
-import type { Doctor } from "./data";
+import type { Doctor, ServiceDetail } from "./data";
 import { CLINIC_HOURS, CLINIC_PHONE_DISPLAY, WHATSAPP_URL } from "./data";
 import { PromoBanner } from "./promo-banner";
 import { MobileNavigation, MotionController } from "./ui";
@@ -19,6 +20,43 @@ export function Brand() {
       </span>
       <span className="brand-name"><span>Dr Hashim</span><span>&amp; Associates Dental Clinic</span></span>
     </Link>
+  );
+}
+
+/**
+ * The trail a reader can see, plus the `BreadcrumbList` that lets Google show
+ * it in place of the URL in a result. The two have to be emitted together —
+ * markup for a trail no visitor can see is the thing Google's guidance warns
+ * about, so there is no way to opt into one without the other.
+ *
+ * The last item is the page itself, so it renders as plain text and carries no
+ * `item` URL in the markup.
+ */
+export function Breadcrumbs({ items }: { items: Array<{ name: string; href?: string }> }) {
+  const siteUrl = process.env.SITE_URL?.trim().replace(/\/$/, "");
+  const trail = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      ...(item.href ? { item: siteUrl ? `${siteUrl}${item.href === "/" ? "" : item.href}` : item.href } : {}),
+    })),
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(trail).replace(/</g, "\\u003c") }} />
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        {items.map((item, index) => (
+          <Fragment key={item.name}>
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? <Link href={item.href}>{item.name}</Link> : <span aria-current="page">{item.name}</span>}
+          </Fragment>
+        ))}
+      </nav>
+    </>
   );
 }
 
@@ -88,6 +126,70 @@ export function HeroBackdrop({ src, alt, position = "50%" }: { src: string; alt:
 
 export function SectionHeading({ eyebrow, title, accent, copy, id }: { eyebrow: string; title: string; accent?: string; copy?: string; id?: string }) {
   return <div className="section-heading" data-reveal><p className="eyebrow">{eyebrow}</p><h2 id={id}>{title}{accent && <><br /><em>{accent}</em></>}</h2>{copy && <p className="section-intro">{copy}</p>}</div>;
+}
+
+/**
+ * The clinic's written detail for one treatment, rendered on that treatment's
+ * own page. It used to expand inside an accordion on `/services`; it moved
+ * here when the eight services got their own URLs, so this copy now lives in
+ * exactly one place rather than being duplicated across a hub and eight pages.
+ *
+ * The blocks are direct children of `.service-detail` deliberately — the
+ * stylesheet reaches them with `>`, so an extra wrapper element here would
+ * silently drop the paragraph styling.
+ *
+ * Headings are `h2` because the page's `h1` is the treatment itself. Nothing
+ * is invented: every field comes from the clinic's reviewed copy in
+ * `service-details.ts`, and a field the clinic left out renders nothing.
+ */
+export function ServiceDetailBody({ detail }: { detail: ServiceDetail }) {
+  return (
+    <div className="service-detail">
+      {detail.overview?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+
+      {detail.recommendedWhen?.length ? (
+        <>
+          <h2>When it’s recommended</h2>
+          {detail.recommendedWhen.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </>
+      ) : null}
+
+      {detail.whatToExpect?.length ? (
+        <>
+          <h2>What to expect</h2>
+          {detail.whatToExpect.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </>
+      ) : null}
+
+      {detail.aftercare?.length ? (
+        <>
+          <h2>Aftercare</h2>
+          {detail.aftercare.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </>
+      ) : null}
+
+      {detail.faqs && detail.faqs.length > 0 && (
+        <>
+          <h2>Common questions</h2>
+          <dl className="faq-list">
+            {detail.faqs.map((faq) => (
+              <div key={faq.question}>
+                <dt>{faq.question}</dt>
+                <dd>{faq.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </>
+      )}
+
+      {(detail.typicalVisits || detail.performedBy) && (
+        <dl className="service-facts">
+          {detail.typicalVisits && <div><dt>Typical visits</dt><dd>{detail.typicalVisits}</dd></div>}
+          {detail.performedBy && <div><dt>Performed by</dt><dd>{detail.performedBy}</dd></div>}
+        </dl>
+      )}
+    </div>
+  );
 }
 
 /**

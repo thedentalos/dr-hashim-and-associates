@@ -566,12 +566,14 @@ html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin
 
 .doctor-cases { background: var(--tint); }
 .doctor-colleagues { background: var(--white); }
-.colleague-list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-.colleague-list li { border-bottom: 1px solid var(--line); }
-.colleague-list a { display: grid; gap: 3px 26px; padding: 20px 0; }
-.colleague-list a:hover .colleague-name { color: var(--blue); }
-.colleague-name { font-family: var(--display); font-size: 25px; letter-spacing: -.03em; }
-.colleague-role { color: var(--ink-muted); font-size: 13px; }
+/* The same linked-row list serves a clinician's colleagues on /team/<slug> and
+   a treatment's sibling services on /services/<slug>. */
+.colleague-list, .service-sibling-list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
+.colleague-list li, .service-sibling-list li { border-bottom: 1px solid var(--line); }
+.colleague-list a, .service-sibling-list a { display: grid; gap: 3px 26px; padding: 20px 0; }
+.colleague-list a:hover .colleague-name, .service-sibling-list a:hover .service-sibling-name { color: var(--blue); }
+.colleague-name, .service-sibling-name { font-family: var(--display); font-size: 25px; letter-spacing: -.03em; }
+.colleague-role, .service-sibling-copy { color: var(--ink-muted); font-size: 13px; }
 
 .route-hero { padding: 54px 6% 60px; }
 .route-hero h1 { max-width: 980px; }
@@ -596,14 +598,18 @@ html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin
 .route-hero-photo > h1 em { color: var(--blue-on-dark); }
 
 /* ── Service rail ───────────────────────────────────────────────────────────
-   The eight services threaded down a single rail, grouped into the five stages
-   of care. Each stage carries a numbered marker on the line, and each service
-   is a row that expands in place to reveal the detail the clinic supplies.
+   The eight services threaded down a single rail on /services, grouped into
+   the five stages of care. Each stage carries a numbered marker on the line,
+   and each service is a row that names the treatment and links through to the
+   page that covers it.
 
-   Expansion uses native <details>, so the page needs no JavaScript at all and
-   the detail text is present in the HTML for search engines even while closed.
-   Stages without any detail yet render as plain rows rather than empty
-   disclosures.                                                                */
+   These rows used to be native <details> disclosures. Now that every treatment
+   has a page of its own, the detail lives there and nowhere else: the hub is a
+   directory and never repeats a word of what a treatment page says, which is
+   what would otherwise leave the two competing for the same query.
+
+   Each row keeps `id={key}`, so the anchors the homepage journey links to
+   (`/services#endodontics`) still land on the right row.                     */
 .treatment-rail { position: relative; margin-top: 34px; padding-left: 44px; }
 .treatment-rail::before {
   position: absolute;
@@ -657,43 +663,32 @@ html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin
   grid-column: 2;
   grid-row: 1;
   align-self: start;
-  /* leaves room for the disclosure chevron, which sits at the row's right edge */
-  margin: 4px 26px 0 0;
+  margin: 4px 0 0;
   color: var(--navy);
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
 }
 .rail-service-book:hover { color: var(--blue-ink); }
+/* The treatment name is the row's link through to its own page. */
+.rail-service-title a:hover { color: var(--blue-ink); }
 
-/* Native disclosure — no JavaScript, and the closed content stays in the DOM. */
-.rail-service-details > summary { cursor: pointer; list-style: none; padding-right: 26px; }
-.rail-service-details > summary::-webkit-details-marker { display: none; }
-.rail-service-chevron {
-  position: absolute;
-  top: 24px;
-  right: 2px;
-  width: 11px;
-  height: 11px;
-  border-right: 1.5px solid var(--blue);
-  border-bottom: 1.5px solid var(--blue);
-  transform: rotate(45deg);
-  transition: transform var(--dur-standard) var(--ease-soft);
-}
-.rail-service-details[open] .rail-service-chevron { transform: rotate(225deg); }
-.rail-service-details[open] .rail-service-head { margin-bottom: 12px; }
+/* ── One treatment's detail (on /services/<slug>) ───────────────────────────
+   These blocks are direct children of `.service-detail`, which is why the
+   rule below uses `>` — `ServiceDetailBody` adds no wrapper of its own. */
+.service-detail { padding-bottom: 8px; max-width: 62ch; }
+.service-detail > p { margin-bottom: 14px; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
+.service-detail h2 { margin: 20px 0 10px; color: var(--navy); font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 
-.rail-service-body { padding-bottom: 8px; max-width: 62ch; }
-.rail-service-body > p { margin-bottom: 14px; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
-.rail-service-body h4 { margin: 20px 0 10px; color: var(--navy); font-family: var(--sans); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.faq-list { display: grid; gap: 16px; margin: 0; }
+.faq-list dt { margin-bottom: 5px; font-family: var(--display); font-size: 18px; }
+.faq-list dd { margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
 
-.rail-faqs { display: grid; gap: 16px; margin: 0; }
-.rail-faqs dt { margin-bottom: 5px; font-family: var(--display); font-size: 18px; }
-.rail-faqs dd { margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.8; }
+.service-facts { display: grid; gap: 12px; margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.service-facts dt { margin-bottom: 3px; color: var(--ink-muted); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.service-facts dd { margin: 0; font-family: var(--display); font-size: 17px; }
 
-.rail-facts { display: grid; gap: 12px; margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
-.rail-facts dt { margin-bottom: 3px; color: var(--ink-muted); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.rail-facts dd { margin: 0; font-family: var(--display); font-size: 17px; }
+.service-siblings { background: var(--tint); }
 
 @media (min-width: 900px) {
   .treatment-rail { padding-left: 56px; }
@@ -703,7 +698,6 @@ html:has(.promo-banner):not([data-offer-dismissed="1"]) .section { scroll-margin
   .rail-service { padding: 18px 0; gap: 0 32px; }
   .rail-service-title { font-size: 25px; }
   .rail-service-copy { font-size: 14px; }
-  .rail-service-chevron { top: 26px; }
 }
 
 .case-directory { background: var(--tint); }

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { doctors } from "./data";
+import { doctors, services } from "./data";
 
 /**
  * Canonical URLs, this sitemap and the `Sitemap:` line in robots.txt all derive
@@ -40,6 +40,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
     { url: `${siteUrl}/services`, lastModified, changeFrequency: "monthly", priority: 0.9 },
+    ...services.map((service) => ({
+      url: `${siteUrl}/services/${service.slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     { url: `${siteUrl}/cases`, lastModified, changeFrequency: "monthly", priority: 0.7 },
     { url: `${siteUrl}/reviews`, lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/book-appointment`, lastModified, changeFrequency: "monthly", priority: 0.9 },

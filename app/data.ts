@@ -21,15 +21,93 @@ export const CLINIC_CLOSES = "20:30";
 export const GOOGLE_MAPS_URL =
   "https://www.google.com/maps/search/?api=1&query=Dr%20Hashim%20and%20Associates%20Dental%20Clinic&query_place_id=ChIJ8zBMenhKz2cRBnRXb0-JHtI";
 
+/**
+ * `key` is the internal join key — `careStages` groups by it, `serviceDetails`
+ * is keyed by it, and it is the anchor id each row carries on `/services`.
+ *
+ * `slug` is the public URL segment at `/services/<slug>`, and is deliberately
+ * not the same string: the keys are clinical jargon ("endodontics") and the
+ * slugs are what patients actually type. Changing a slug changes a live URL
+ * and needs a redirect, so they are kept as separate fields rather than
+ * renaming the keys and dragging every join along with them.
+ *
+ * `seoTitle` carries no clinic name — `app/layout.tsx` applies the
+ * `%s | Dr Hashim & Associates` template. Both SEO strings are derived from
+ * the copy in `service-details.ts` and make no claim that copy doesn't.
+ */
 export const services = [
-  { key: "diagnostics", title: "Diagnostics", label: "Understanding your needs", copy: "A careful assessment to understand your oral health and discuss suitable next steps." },
-  { key: "endodontics", title: "Endodontics", label: "Root canal care", copy: "Care focused on the inside of a tooth when root canal treatment is appropriate." },
-  { key: "periodontics", title: "Periodontics", label: "Gum treatment", copy: "Assessment and care for the gums and the tissues that support your teeth." },
-  { key: "pediatric", title: "Pediatric Dentistry", label: "Care for children", copy: "Age-appropriate dental visits with clear explanations and a gentle pace." },
-  { key: "surgery", title: "Oral Surgery", label: "Surgical dental care", copy: "Consultation and surgical care, including extractions when clinically appropriate." },
-  { key: "orthodontics", title: "Orthodontics", label: "Braces and aligners", copy: "Options for improving tooth alignment and bite for children, teens, and adults." },
-  { key: "cosmetic", title: "Cosmetic Dentistry", label: "Smile-focused care", copy: "Thoughtful options to discuss the shade, shape, and appearance of your smile." },
-  { key: "restorative", title: "Restorative Dentistry", label: "Restoring comfort", copy: "Individual care for damaged or missing teeth, explained clearly and planned with you." },
+  {
+    key: "diagnostics",
+    slug: "dental-check-up",
+    seoTitle: "Dental Check-Up and X-Rays in G-9 Markaz, Islamabad",
+    seoDescription: "A full exam, X-rays and screening for cavities, gum disease and oral cancer, with a clear plan and priorities before you leave.",
+    title: "Diagnostics",
+    label: "Understanding your needs",
+    copy: "A careful assessment to understand your oral health and discuss suitable next steps.",
+  },
+  {
+    key: "endodontics",
+    slug: "root-canal-treatment",
+    seoTitle: "Root Canal Treatment in G-9 Markaz, Islamabad",
+    seoDescription: "Root canal treatment removes infected tissue from inside a tooth and seals it, so you can keep your natural tooth. Usually 60–90 minutes per visit.",
+    title: "Endodontics",
+    label: "Root canal care",
+    copy: "Care focused on the inside of a tooth when root canal treatment is appropriate.",
+  },
+  {
+    key: "periodontics",
+    slug: "gum-treatment",
+    seoTitle: "Gum Treatment in G-9 Markaz, Islamabad",
+    seoDescription: "Assessment and treatment for bleeding, swollen or receding gums, including scaling and root planing below the gumline.",
+    title: "Periodontics",
+    label: "Gum treatment",
+    copy: "Assessment and care for the gums and the tissues that support your teeth.",
+  },
+  {
+    key: "pediatric",
+    slug: "childrens-dentistry",
+    seoTitle: "Children’s Dentistry in G-9 Markaz, Islamabad",
+    seoDescription: "Gentle dental care for babies, children and teens, from the first tooth onward, with clear guidance for parents on brushing and diet.",
+    title: "Pediatric Dentistry",
+    label: "Care for children",
+    copy: "Age-appropriate dental visits with clear explanations and a gentle pace.",
+  },
+  {
+    key: "surgery",
+    slug: "oral-surgery",
+    seoTitle: "Oral Surgery in G-9 Markaz, Islamabad",
+    seoDescription: "Extractions, wisdom tooth removal and implant placement, with written aftercare instructions and a clear plan for recovery.",
+    title: "Oral Surgery",
+    label: "Surgical dental care",
+    copy: "Consultation and surgical care, including extractions when clinically appropriate.",
+  },
+  {
+    key: "orthodontics",
+    slug: "braces-and-aligners",
+    seoTitle: "Braces and Clear Aligners in G-9 Markaz, Islamabad",
+    seoDescription: "Braces and clear aligner treatment for crowding, gaps and bite problems in teens and adults, with regular adjustment visits.",
+    title: "Orthodontics",
+    label: "Braces and aligners",
+    copy: "Options for improving tooth alignment and bite for children, teens, and adults.",
+  },
+  {
+    key: "cosmetic",
+    slug: "cosmetic-dentistry",
+    seoTitle: "Cosmetic Dentistry in G-9 Markaz, Islamabad",
+    seoDescription: "Whitening, bonding, veneers and reshaping to improve the look of your smile, planned around your goals and discussed before treatment.",
+    title: "Cosmetic Dentistry",
+    label: "Smile-focused care",
+    copy: "Thoughtful options to discuss the shade, shape, and appearance of your smile.",
+  },
+  {
+    key: "restorative",
+    slug: "restorative-dentistry",
+    seoTitle: "Fillings, Crowns and Bridges in G-9 Markaz, Islamabad",
+    seoDescription: "Fillings, crowns, bridges and dentures that repair damaged or missing teeth, restoring comfortable chewing and appearance.",
+    title: "Restorative Dentistry",
+    label: "Restoring comfort",
+    copy: "Individual care for damaged or missing teeth, explained clearly and planned with you.",
+  },
 ] as const;
 
 /**
@@ -168,9 +246,21 @@ export const doctors = [
 
 export type Doctor = (typeof doctors)[number];
 export type CaseItem = (typeof cases)[number];
+export type Service = (typeof services)[number];
+/** The closed union of live `/services/<slug>` URLs. */
+export type ServiceSlug = Service["slug"];
 
 export function getDoctor(slug: string): Doctor | undefined {
   return doctors.find((doctor) => doctor.slug === slug);
+}
+
+/**
+ * Resolves a `/services/<slug>` URL segment. Takes a wide `string` because the
+ * caller's slug comes from route params — `generateStaticParams` is what
+ * narrows the set of slugs that can actually reach it.
+ */
+export function getService(slug: string): Service | undefined {
+  return services.find((service) => service.slug === slug);
 }
 
 /** The clinical examples credited to one clinician, in gallery order. */
