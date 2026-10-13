@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { BookingLink, PageFrame, SectionHeading } from "../components";
-import { CLINIC_HOURS, CLINIC_PHONE_DISPLAY, WHATSAPP_URL } from "../data";
+import { CLINIC_HOURS, CLINIC_PHONE_DISPLAY, CLINIC_PHONE_E164, WHATSAPP_URL } from "../data";
 import { urduFont } from "../urdu-font";
 
 export const metadata: Metadata = {
@@ -52,7 +52,7 @@ export default function AboutPage() {
         </section>
 
         <section className="section location-section" aria-labelledby="location-title">
-          <div className="location-copy"><SectionHeading eyebrow="Find us" title="Conveniently located" accent="in G-9 Markaz." id="location-title" /><div className="location-details" data-reveal><p><strong>Address</strong><span>1st Floor, Pehchan Mall, G-9 Markaz, Islamabad</span></p><p><strong>Clinic hours</strong><span>{CLINIC_HOURS}</span></p><p><strong>WhatsApp</strong><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">{CLINIC_PHONE_DISPLAY}</a></p><div className="location-actions"><BookingLink>Book an Appointment</BookingLink><Link className="secondary-button" href="/team">Meet Our Team</Link></div></div></div>
+          <div className="location-copy"><SectionHeading eyebrow="Find us" title="Conveniently located" accent="in G-9 Markaz." id="location-title" /><div className="location-details" data-reveal><p><strong>Address</strong><span>1st Floor, Pehchan Mall, G-9 Markaz, Islamabad</span></p><p><strong>Clinic hours</strong><span>{CLINIC_HOURS}</span></p><p><strong>Call</strong><a href={`tel:${CLINIC_PHONE_E164}`}>{CLINIC_PHONE_DISPLAY}</a></p><p><strong>WhatsApp</strong><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">Start a chat</a></p><div className="location-actions"><BookingLink>Book an Appointment</BookingLink><Link className="secondary-button" href="/team">Meet Our Team</Link></div></div></div>
           <div className="map-frame" data-reveal><iframe title="Map showing Dr Hashim and Associates Dental Clinic in G-9 Markaz, Islamabad" src="https://www.google.com/maps?q=1st%20Floor%2C%20Pehchan%20Mall%2C%20G-9%20Markaz%2C%20Islamabad&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div>
         </section>
       </main>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BookingLink, HeroBackdrop, PageFrame, SectionHeading } from "../components";
-import { CLINIC_ADDRESS, CLINIC_EMAIL, CLINIC_HOURS, CLINIC_HOURS_NOTE, CLINIC_PHONE_DISPLAY, GOOGLE_MAPS_URL, WHATSAPP_URL } from "../data";
+import { CLINIC_ADDRESS, CLINIC_EMAIL, CLINIC_HOURS, CLINIC_HOURS_NOTE, CLINIC_PHONE_DISPLAY, CLINIC_PHONE_E164, GOOGLE_MAPS_URL, WHATSAPP_URL } from "../data";
 import { ContactEnquiryForm } from "../ui";
 
 export const metadata: Metadata = {
@@ -24,6 +24,7 @@ export default function ContactPage() {
           <SectionHeading eyebrow="Clinic details" title="Everything you need" accent="before your visit." id="contact-details-title" />
           <div className="contact-detail-grid">
             <address><span>Address</span><strong>{CLINIC_ADDRESS}</strong><a href={GOOGLE_MAPS_URL} target="_blank" rel="noreferrer">Open in Google Maps <span aria-hidden="true">↗</span></a></address>
+            <div><span>Call</span><strong>{CLINIC_PHONE_DISPLAY}</strong><a href={`tel:${CLINIC_PHONE_E164}`}>Call this number</a></div>
             <div><span>WhatsApp</span><strong>{CLINIC_PHONE_DISPLAY}</strong><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">Start a WhatsApp chat <span aria-hidden="true">↗</span></a></div>
             <div><span>Email</span><strong>{CLINIC_EMAIL}</strong><a href={`mailto:${CLINIC_EMAIL}`}>Send an email</a></div>
             <div><span>Clinic hours</span><strong>{CLINIC_HOURS}</strong><small className="hours-note">{CLINIC_HOURS_NOTE}</small><BookingLink className="text-link">Book an Appointment</BookingLink></div>

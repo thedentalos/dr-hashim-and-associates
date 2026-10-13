@@ -8,7 +8,7 @@ import type { CSSProperties, ReactNode } from "react";
 // left untouched as the source of truth.
 import clinicLogo from "../logo-mark.webp";
 import type { Doctor, ServiceDetail } from "./data";
-import { CLINIC_EMAIL, CLINIC_HOURS_NOTE, CLINIC_HOURS_SHORT, CLINIC_PHONE_DISPLAY, INSTAGRAM_URL, WHATSAPP_URL } from "./data";
+import { CLINIC_EMAIL, CLINIC_HOURS_NOTE, CLINIC_HOURS_SHORT, CLINIC_PHONE_DISPLAY, CLINIC_PHONE_E164, INSTAGRAM_URL, WHATSAPP_URL } from "./data";
 import { PromoBanner } from "./promo-banner";
 import { MobileNavigation, MotionController } from "./ui";
 
@@ -228,7 +228,7 @@ export function Footer() {
       <div className="footer-brand"><Brand /><p>Modern dental care for everyone.</p></div>
       <div className="footer-details">
         <div><h2>Visit</h2><p>1st Floor, Pehchan Mall<br />G-9 Markaz, Islamabad</p></div>
-        <div><h2>Contact</h2><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp: {CLINIC_PHONE_DISPLAY}</a><a href={`mailto:${CLINIC_EMAIL}`}>{CLINIC_EMAIL}</a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">Instagram <span aria-hidden="true">↗</span></a></div>
+        <div><h2>Contact</h2><a href={`tel:${CLINIC_PHONE_E164}`}>Call: {CLINIC_PHONE_DISPLAY}</a><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp</a><a href={`mailto:${CLINIC_EMAIL}`}>{CLINIC_EMAIL}</a><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">Instagram <span aria-hidden="true">↗</span></a></div>
         <div><h2>Clinic hours</h2><p>{CLINIC_HOURS_SHORT}</p><p className="hours-note">{CLINIC_HOURS_NOTE}</p><BookingLink className="footer-book">Book an Appointment</BookingLink></div>
       </div>
       <div className="footer-bottom"><span>© {new Date().getFullYear()} Dr Hashim &amp; Associates Dental Clinic</span><span>G-9 Markaz, Islamabad</span></div>

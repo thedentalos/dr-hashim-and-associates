@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BookingLink, DoctorCard, GoogleReviewsLoading, PageFrame, SectionHeading } from "./components";
-import { cases, CLINIC_ADDRESS, CLINIC_CLOSES, CLINIC_DAYS, CLINIC_HOURS, CLINIC_HOURS_NOTE, CLINIC_OPENS, CLINIC_PHONE_E164, doctors, getDoctor, GOOGLE_MAPS_URL, INSTAGRAM_URL, offer, WHATSAPP_URL } from "./data";
+import { cases, CLINIC_ADDRESS, CLINIC_CLOSES, CLINIC_DAYS, CLINIC_HOURS, CLINIC_HOURS_NOTE, CLINIC_OPENS, CLINIC_PHONE_DISPLAY, CLINIC_PHONE_E164, doctors, getDoctor, GOOGLE_MAPS_URL, INSTAGRAM_URL, offer, WHATSAPP_URL } from "./data";
 import { getGoogleReviews } from "./google-reviews";
 import { SmileJourney } from "./smile-journey";
 import { TypewriterWord } from "./typewriter-word";
@@ -222,6 +222,7 @@ export default function Home() {
             <SectionHeading eyebrow="Find us" title="Your clinic in" accent="G-9 Markaz." id="home-location-title" />
             <div className="location-details" data-reveal>
               <address><strong>Address</strong><span>{CLINIC_ADDRESS}</span></address>
+              <p><strong>Call</strong><a href={`tel:${CLINIC_PHONE_E164}`}>{CLINIC_PHONE_DISPLAY}</a></p>
               <p><strong>Clinic hours</strong><span>{CLINIC_HOURS}<small className="hours-note">{CLINIC_HOURS_NOTE}</small></span></p>
               <div className="location-actions"><a className="secondary-button" href={GOOGLE_MAPS_URL} target="_blank" rel="noreferrer">Open in Google Maps</a><BookingLink>Book an Appointment</BookingLink></div>
             </div>
